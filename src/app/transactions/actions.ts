@@ -3,9 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
+import { stackServerApp } from "@/stack/server";
 
 export async function createTransaction(formData: FormData) {
-  const user_id = "TODO-user-id";
+  const user = await stackServerApp.getUser();
+  if (!user) throw new Error("Not authenticated");
+  const user_id = user.id;
 
   const amountRaw = formData.get("amount")?.toString() ?? "0";
   const amount = new Decimal(amountRaw);
