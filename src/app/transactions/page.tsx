@@ -1,3 +1,5 @@
+import TransactionTable from "@/components/TransactionTable";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function TransactionsPage() {
@@ -8,27 +10,11 @@ export default async function TransactionsPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Recent Transactions</h1>
-      <ul>
-        {tx.map((t) => (
-          <li key={t.id} className="mb-2">
-            <div>
-              <strong>Date:</strong> {t.transaction_date.toISOString().split("T")[0]}
-            </div>
-            <div>
-              <strong>Amount:</strong> ${t.amount.toFixed(2)}
-            </div>
-            <div>
-              <strong>Type:</strong> {t.transaction_type}
-            </div>
-            {t.description && (
-              <div>
-                <strong>Description:</strong> {t.description}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold mb-4">Recent Transactions</h1>
+        <Link href="/transactions/new" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Add Transaction</Link>
+      </div>
+      <TransactionTable transactions={tx} />
     </div>
   );
 }
