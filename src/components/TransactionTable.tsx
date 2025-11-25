@@ -3,11 +3,10 @@ import {
   TableHeader,
   TableHead,
   TableBody,
-  TableCaption,
   TableFooter,
   TableRow,
   TableCell
-} from "@/components/ui/Table";
+} from "@/components/ui/table";
 
 import clsx from "clsx";
 
