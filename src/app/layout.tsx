@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 // Styles Provider
 import { ThemeProvider } from "@/components/theme-provider";
+
+// Nav Components
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/header";
+
 // Auth Provider
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackClientApp } from "../stack/client";
@@ -37,8 +42,13 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <StackProvider app={stackClientApp}>
               <StackTheme>
-                <Header />
-                {children}
+                <SidebarProvider>
+                  <AppSidebar />
+                  <main className="w-full">
+                    <Header />
+                    {children}
+                  </main>
+                </SidebarProvider>
               </StackTheme>
             </StackProvider>
           </ThemeProvider>
