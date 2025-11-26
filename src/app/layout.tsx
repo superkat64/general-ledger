@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 // Styles Provider
 import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/Header";
+import Header from "@/components/header";
 // Auth Provider
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackClientApp } from "../stack/client";

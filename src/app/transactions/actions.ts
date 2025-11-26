@@ -21,13 +21,7 @@ export async function createTransaction(formData: FormData) {
   const description = formData.get("description")?.toString() || null;
 
   await prisma.transaction.create({
-    data: {
-      user_id,
-      transaction_date: new Date(dateRaw),
-      amount,
-      transaction_type,
-      description,
-    },
+    data: { user_id, transaction_date: new Date(dateRaw), amount, transaction_type, description },
   });
 
   // revalidate the list page

@@ -1,4 +1,4 @@
-import TransactionTable from "@/components/TransactionTable";
+import TransactionTable from "@/components/transaction-table";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
