@@ -1,7 +1,7 @@
 # General Ledger
 
 <div align="center">
-  <img src="./general-ledger-icon.webp" alt="General Ledger Logo" width="200"/>
+  <img src="./general-ledger-banner.png" alt="General Ledger Logo" width="200"/>
   
   A mobile-first personal finance tracker built to solve a data entry problem.
   
@@ -10,7 +10,7 @@
 
 ## The Problem
 
-Existing budgeting apps either lack the flexibility and control I needed, or they're too cumbersome for quick mobile entry. Mint had poor category identification and limited customization. I tried using an extensive Google Sheets setup, but editing on mobile was frustrating and clunky. I needed a solution that would let me capture transactions the moment they happen, from anywhere, with full control over my financial data.
+Existing budgeting apps either lack the flexibility and control I needed, or they're too cumbersome for quick mobile entry. Other tools had poor category identification and limited customization. I tried using an extensive Google Sheets setup, but editing on mobile was frustrating and clunky. I needed a solution that would let me capture transactions the moment they happen, from anywhere, with full control over my financial data.
 
 ## The Solution
 
