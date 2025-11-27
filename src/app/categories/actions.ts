@@ -40,6 +40,7 @@ export async function listCategories() {
   return prisma.category.findMany({
     where: { user_id: user.id },
     orderBy: { name: "asc" },
+    include: { subcategory: { select: { id: true, name: true } } },
   });
 }
 
@@ -94,4 +95,12 @@ export async function deleteCategory(id: string) {
   await prisma.category.deleteMany({ where: { id, user_id } });
 
   revalidatePath("/categories");
+}
+
+// Server action wrapper to be used as a form `action` (accepts FormData)
+export async function deleteCategoryAction(formData: FormData) {
+  const id = formData.get("id")?.toString();
+  if (!id) throw new Error("Category id is required");
+
+  await deleteCategory(id);
 }
