@@ -1,7 +1,7 @@
 # General Ledger
 
 <div align="center">
-  <img src="./general-ledger-banner.png" alt="General Ledger Logo" width="200"/>
+  <img src="./general-ledger-banner.png" alt="General Ledger Banner" />
   
   A mobile-first personal finance tracker built to solve a data entry problem.
   
