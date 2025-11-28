@@ -1,4 +1,4 @@
-
+// app/categories/page.tsx
 import CategoryTable from "@/components/category-table";
 import Link from "next/link";
 import { listCategories } from "@/app/categories/actions";

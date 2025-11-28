@@ -1,3 +1,4 @@
+// app/categories/actions.tsx
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -50,6 +51,7 @@ export async function getCategoryById(id: string) {
 
   return prisma.category.findFirst({
     where: { id, user_id: user.id },
+    include: { subcategory: true },
   });
 }
 

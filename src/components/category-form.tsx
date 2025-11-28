@@ -1,3 +1,4 @@
+// components/category-form.tsx
 "use client";
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -15,10 +16,14 @@ import { Plus } from "lucide-react"
 
 import { createCategory } from "@/app/categories/actions";
 import { useTransition } from "react";
+import { Prisma } from '@prisma/client';
 
-export default function CategoryForm() {
-  const [subcategories, setSubcategories] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState('');
+type CategoryWithRelations = Prisma.categoryGetPayload<{ include: { subcategory: true } }>;
+
+export default function CategoryForm({ category }: { category?: CategoryWithRelations }) {
+  const [subcategories, setSubcategories] = useState<string[]>(
+    category?.subcategory.map(sub => sub.name) ?? []
+  ); const [inputValue, setInputValue] = useState('');
   const [isPending, startTransition] = useTransition();
 
   const addSubcategory = () => {
@@ -42,15 +47,15 @@ export default function CategoryForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md">
       <Label htmlFor="name">Name</Label>
-      <Input type="text" name="name" required />
+      <Input type="text" name="name" value={category?.name} required />
 
       <Label htmlFor="monthly_budget">Monthly Budget</Label>
-      <Input type="number" name="monthly_budget" step="0.01" />
+      <Input type="number" name="monthly_budget" value={category?.monthly_budget?.toNumber()} step="0.01" />
 
       <Label htmlFor="type">Type</Label>
       <Select>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select type" />
+          <SelectValue placeholder="Select type" defaultValue={category?.type} />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="expense">Expense</SelectItem>
@@ -60,10 +65,10 @@ export default function CategoryForm() {
       </Select>
 
       <Label htmlFor="color">Color</Label>
-      <Input type="text" name="color" />
+      <Input type="text" name="color" value={category?.color ?? ''} />
 
       <Label htmlFor="icon">Icon</Label>
-      <Input type="text" name="icon" />
+      <Input type="text" name="icon" value={category?.icon ?? ''} />
 
       <Label htmlFor="subcategories">Subcategories</Label>
       <div className="flex items-center gap-2">
