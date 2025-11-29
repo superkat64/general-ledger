@@ -1,3 +1,4 @@
+// app/categories/actions.tsx
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -40,6 +41,7 @@ export async function listCategories() {
   return prisma.category.findMany({
     where: { user_id: user.id },
     orderBy: { name: "asc" },
+    include: { subcategory: { select: { id: true, name: true } } },
   });
 }
 
@@ -49,6 +51,7 @@ export async function getCategoryById(id: string) {
 
   return prisma.category.findFirst({
     where: { id, user_id: user.id },
+    include: { subcategory: true },
   });
 }
 
@@ -70,18 +73,38 @@ export async function updateCategory(formData: FormData) {
   const color = formData.get("color")?.toString() || null;
   const icon = formData.get("icon")?.toString() || null;
 
+  // New approach: accept existing subcategory IDs to keep, and new subcategory names to create.
   const subcategoryValues = formData.getAll("subcategory").map((s) => s?.toString().trim()).filter(Boolean);
+  const existingSubcategoryIds = formData.getAll("existing_subcategory_id").map((s) => s?.toString()).filter(Boolean);
 
-  // Ensure the category exists and belongs to the user before using nested writes
+  // Ensure the category exists and belongs to the user
   const existing = await prisma.category.findFirst({ where: { id, user_id } });
   if (!existing) throw new Error("Category not found or not authorized");
 
   const updateData: any = { name, monthly_budget, type, color, icon };
-  if (subcategoryValues.length > 0) {
-    updateData.subcategory = { create: subcategoryValues.map((s) => ({ name: s })) };
+
+  // Fetch current subcategory ids from DB for this category
+  const currentSubs = await prisma.subcategory.findMany({ where: { category_id: id }, select: { id: true } });
+  const currentIds = currentSubs.map((s) => s.id);
+
+  // Deduplicate new names
+  const newNames = Array.from(new Set(subcategoryValues));
+
+  // Build transaction operations: update category fields, create new subs
+  const ops: any[] = [];
+  ops.push(prisma.category.update({ where: { id }, data: updateData }));
+  if (newNames.length > 0) {
+    ops.push(
+      prisma.subcategory.createMany({
+        data: newNames.map((name) => ({ category_id: id, name })),
+        skipDuplicates: true,
+      })
+    );
   }
 
-  await prisma.category.update({ where: { id }, data: updateData });
+  if (ops.length > 0) {
+    await prisma.$transaction(ops);
+  }
 
   revalidatePath("/categories");
 }
@@ -94,4 +117,12 @@ export async function deleteCategory(id: string) {
   await prisma.category.deleteMany({ where: { id, user_id } });
 
   revalidatePath("/categories");
+}
+
+// Server action wrapper to be used as a form `action` (accepts FormData)
+export async function deleteCategoryAction(formData: FormData) {
+  const id = formData.get("id")?.toString();
+  if (!id) throw new Error("Category id is required");
+
+  await deleteCategory(id);
 }

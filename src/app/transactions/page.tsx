@@ -1,12 +1,9 @@
 import TransactionTable from "@/components/transaction-table";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { listTransactions } from "@/app/transactions/actions";
 
 export default async function TransactionsPage() {
-  const tx = await prisma.transaction.findMany({
-    orderBy: { transaction_date: "desc" },
-    take: 10,
-  });
+  const tx = await listTransactions();
 
   return (
     <div className="p-8">
