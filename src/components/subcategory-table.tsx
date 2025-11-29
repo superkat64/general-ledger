@@ -1,3 +1,4 @@
+//components/subcategory-table.tsx
 "use client";
 
 import { useState, useTransition } from "react";
@@ -39,9 +40,13 @@ export default function SubcategoryTable({ subcategories, categoryId }: Subcateg
     const formData = new FormData();
     formData.append('name', editingValue);
     formData.append('id', editingId);
-    startTransition(() => {
-      updateSubcategoryName(formData);
-      cancelEdit();
+    startTransition(async () => {
+      try {
+        await updateSubcategoryName(formData);
+        cancelEdit();
+      } catch (error) {
+        console.error('Failed to updated subcategory:', error);
+      }
     })
   };
 
@@ -50,7 +55,9 @@ export default function SubcategoryTable({ subcategories, categoryId }: Subcateg
 
     const formData = new FormData();
     formData.append('id', id);
-    await deleteSubcategory(formData);
+    startTransition(async () => {
+      await deleteSubcategory(formData);
+    });
   };
 
   const buttonClasses = "inline-flex items-center justify-center p-1 rounded";

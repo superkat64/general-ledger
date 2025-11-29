@@ -24,8 +24,8 @@ type CategoryTableProps = {
 };
 
 function formatAmount(amount: number | Decimal | string | null | undefined) {
-  if (!amount) return "-";
-  if (amount && typeof amount === "object" && "toFixed" in amount) {
+  if (amount === null || amount === undefined) return "-";
+  if (typeof amount === "object" && "toFixed" in amount) {
     try {
       return (amount as Decimal).toFixed(2);
     } catch {

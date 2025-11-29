@@ -80,9 +80,9 @@ export default function CategoryForm({ category }: { category?: CategoryWithRela
       <Input type="number" name="monthly_budget" value={monthlyBudget} onChange={(e) => setMonthlyBudget(e.currentTarget.value)} step="0.01" />
 
       <Label htmlFor="type">Type</Label>
-      <Select>
+      <Select value={typeValue} onValueChange={setTypeValue}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select type">{typeValue}</SelectValue>
+          <SelectValue placeholder="Select type" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="expense">Expense</SelectItem>
