@@ -1,20 +1,16 @@
-import {
-  Table,
-  TableHeader,
-  TableHead,
-  TableBody,
-  TableFooter,
-  TableRow,
-  TableCell
-} from "@/components/ui/table";
+//components/category-table.tsx
+"use client";
 
+import { useTransition } from "react";
+import { Table, TableHeader, TableHead, TableBody, TableFooter, TableRow, TableCell } from "@/components/ui/table";
+import Link from "next/link";
+import { Trash2, Edit } from "lucide-react";
+
+import { deleteCategory } from "@/app/categories/actions";
+import { Decimal } from "@prisma/client/runtime/library";
 import { cn } from "@/lib/utils";
 
 import type { category } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
-import { deleteCategoryAction } from "@/app/categories/actions";
-import Link from "next/link";
-import { Trash2, Edit } from "lucide-react";
 
 type Sub = { id: string; name: string };
 type CategoryWithSubs = category & { subcategory?: Sub[] };
@@ -36,6 +32,18 @@ function formatAmount(amount: number | Decimal | string | null | undefined) {
 }
 
 export default function CategoryTable({ categories }: CategoryTableProps) {
+  const [isPending, startTransition] = useTransition();
+
+  const deleteRow = async (id: string) => {
+    if (!confirm("Delete this category?")) return;
+
+    const formData = new FormData();
+    formData.append('id', id);
+    startTransition(async () => {
+      await deleteCategory(formData);
+    });
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -50,6 +58,13 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
+        {categories.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={7} className={cn("text-center py-6 text-sm text-muted-foreground")}>
+              No categories yet
+            </TableCell>
+          </TableRow>
+        )}
         {categories.map((c) => (
           <TableRow key={c.id}>
             <TableCell>{c.name}</TableCell>
@@ -57,7 +72,7 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
             <TableCell className={cn("text-right")}>${formatAmount(c.monthly_budget)}</TableCell>
             <TableCell>
               {c.color ? (
-                <div className="w-5 h-5 rounded" style={{ backgroundColor: c.color }} />
+                <><div className="w-5 h-5 rounded" style={{ backgroundColor: c.color }} title={c.color} /> #{c.color} </>
               ) : (
                 "-"
               )}
@@ -73,7 +88,7 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
                   ))}
                 </div>
               ) : (
-                "-"
+                "None"
               )}
             </TableCell>
             <TableCell>
@@ -86,17 +101,14 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
                 >
                   <Edit className="w-4 h-4" />
                 </Link>
-                <form action={deleteCategoryAction} method="post">
-                  <input type="hidden" name="id" value={c.id} />
-                  <button
-                    type="submit"
-                    aria-label={`Delete category ${c.name}`}
-                    title={`Delete category ${c.name}`}
-                    className="inline-flex items-center justify-center text-red-600 hover:text-red-700 p-1 rounded"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </form>
+                <button
+                  onClick={() => deleteRow(c.id)}
+                  aria-label={`Delete category ${c.name}`}
+                  title={`Delete category ${c.name}`}
+                  className="inline-flex items-center justify-center text-red-600 hover:text-red-700 p-1 rounded"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </TableCell>
           </TableRow>
