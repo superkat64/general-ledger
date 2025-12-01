@@ -1,7 +1,4 @@
-// app/transactions/actions.ts
-
-// TODO: FormData wrapper for deletion is straightforward; think about user-facing errors (42-47)
-
+// app/transactions/actions.tsx
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -44,24 +41,20 @@ export async function createTransaction(formData: FormData) {
   revalidatePath("/transactions");
 }
 
-export async function deleteTransaction(id: string) {
+export async function deleteTransaction(formData: FormData) {
   const user = await stackServerApp.getUser();
   if (!user) throw new Error("Not authenticated");
-  const user_id = user.id;
 
-  const count = await prisma.transaction.deleteMany({ where: { id, user_id } });
-  if (count.count === 0) {
-    throw new Error("Transaction not found or not owned by current user");
-  }
-  revalidatePath("/transactions");
-}
-
-// FormData-compatible server action wrapper
-export async function deleteTransactionAction(formData: FormData) {
-  const id = formData.get("id")?.toString();
+  const id = formData.get("id")?.toString()
   if (!id) throw new Error("Transaction id is required");
 
-  await deleteTransaction(id);
+  const existing = await prisma.transaction.findFirst({ where: { id } })
+  if (!existing) throw new Error("Not found");
+  if (existing.user_id !== user.id) throw new Error("Not owned by current user");
+
+  await prisma.transaction.deleteMany({ where: { id } });
+
+  revalidatePath("/transactions");
 }
 
 export async function listTransactions() {
@@ -84,4 +77,3 @@ export async function getTransactionById(id: string) {
     include: transactionWithRelations
   });
 }
-

@@ -1,20 +1,16 @@
-import {
-  Table,
-  TableHeader,
-  TableHead,
-  TableBody,
-  TableFooter,
-  TableRow,
-  TableCell
-} from "@/components/ui/table";
+// components/transaction-table.tsx
+"use client";
 
-import { cn } from "@/lib/utils";
+import { useTransition } from "react";
+import { Table, TableHeader, TableHead, TableBody, TableFooter, TableRow, TableCell } from "@/components/ui/table";
 import Link from "next/link";
+import { Trash2, Edit } from "lucide-react";
 
 import { Decimal } from "@prisma/client/runtime/library";
+import { deleteTransaction } from "@/app/transactions/actions";
+import { cn } from "@/lib/utils";
+
 import type { TransactionWithRels } from "@/lib/types";
-import { deleteTransactionAction } from "@/app/transactions/actions";
-import { Trash2, Edit } from "lucide-react";
 
 type TransactionTableProps = {
   transactions: TransactionWithRels[];
@@ -37,6 +33,17 @@ function formatAmount(amount: number | Decimal | string) {
 }
 
 export default function TransactionTable({ transactions }: TransactionTableProps) {
+  const [isPending, startTransition] = useTransition();
+
+  const deleteRow = async (id: string) => {
+    if (!confirm("Delete this Transaction?")) return;
+
+    const formData = new FormData();
+    formData.append('id', id);
+    startTransition(async () => {
+      await deleteTransaction(formData);
+    });
+  };
   return (
     <Table>
       <TableHeader>
@@ -69,17 +76,13 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                 >
                   <Edit className="w-4 h-4" />
                 </Link>
-                <form action={deleteTransactionAction} method="post">
-                  <input type="hidden" name="id" value={t.id} />
-                  <button
-                    type="submit"
-                    aria-label={`Delete transaction on ${formatDate(t.transaction_date)}`}
-                    title={`Delete transaction on ${formatDate(t.transaction_date)}`}
-                    className="inline-flex items-center justify-center text-red-600 hover:text-red-700 p-1 rounded"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </form>
+                <button
+                  onClick={() => deleteRow(t.id)}
+                  aria-label={`Delete transaction`}
+                  className="inline-flex items-center justify-center text-red-600 hover:text-red-700 p-1 rounded"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </TableCell>
           </TableRow>
