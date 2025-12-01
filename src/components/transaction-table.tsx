@@ -11,15 +11,10 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-import type { transaction } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
+import type { TransactionWithRels } from "@/lib/types";
 import { deleteTransactionAction } from "@/app/transactions/actions";
 import { Trash2, Edit } from "lucide-react";
-
-type TransactionWithRels = transaction & {
-  subcategory?: { id: string; name: string; category?: { id: string; name: string } } | null;
-  institution?: { id: string; name?: string; last_four_digits?: string | null } | null;
-};
 
 type TransactionTableProps = {
   transactions: TransactionWithRels[];

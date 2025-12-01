@@ -1,9 +1,25 @@
+// app/transactions/actions.ts
+
+// TODO: FormData wrapper for deletion is straightforward; think about user-facing errors (42-47)
+
 "use server";
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { stackServerApp } from "@/stack/server";
+
+const transactionWithRelations = {
+  subcategory: {
+    select: {
+      id: true,
+      name: true,
+      category_id: true,
+      category: { select: { id: true, name: true } },
+    },
+  },
+  institution: { select: { id: true, name: true, last_four_digits: true } },
+};
 
 export async function createTransaction(formData: FormData) {
   const user = await stackServerApp.getUser();
@@ -33,8 +49,10 @@ export async function deleteTransaction(id: string) {
   if (!user) throw new Error("Not authenticated");
   const user_id = user.id;
 
-  await prisma.transaction.deleteMany({ where: { id, user_id } });
-
+  const count = await prisma.transaction.deleteMany({ where: { id, user_id } });
+  if (count.count === 0) {
+    throw new Error("Transaction not found or not owned by current user");
+  }
   revalidatePath("/transactions");
 }
 
@@ -53,17 +71,7 @@ export async function listTransactions() {
   return prisma.transaction.findMany({
     where: { user_id: user.id },
     orderBy: { transaction_date: "desc" },
-    include: {
-      subcategory: {
-        select: {
-          id: true,
-          name: true,
-          category_id: true,
-          category: { select: { id: true, name: true } },
-        },
-      },
-      institution: { select: { id: true, name: true, last_four_digits: true } },
-    },
+    include: transactionWithRelations
   });
 }
 
@@ -73,17 +81,7 @@ export async function getTransactionById(id: string) {
 
   return prisma.transaction.findFirst({
     where: { id, user_id: user.id },
-    include: {
-      subcategory: {
-        select: {
-          id: true,
-          name: true,
-          category_id: true,
-          category: { select: { id: true, name: true } },
-        },
-      },
-      institution: { select: { id: true, name: true, last_four_digits: true } },
-    },
+    include: transactionWithRelations
   });
 }
 
