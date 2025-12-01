@@ -75,17 +75,12 @@ export async function updateCategory(formData: FormData) {
 
   // New approach: accept existing subcategory IDs to keep, and new subcategory names to create.
   const subcategoryValues = formData.getAll("subcategory").map((s) => s?.toString().trim()).filter(Boolean);
-  const existingSubcategoryIds = formData.getAll("existing_subcategory_id").map((s) => s?.toString()).filter(Boolean);
 
   // Ensure the category exists and belongs to the user
   const existing = await prisma.category.findFirst({ where: { id, user_id } });
   if (!existing) throw new Error("Category not found or not authorized");
 
   const updateData: any = { name, monthly_budget, type, color, icon };
-
-  // Fetch current subcategory ids from DB for this category
-  const currentSubs = await prisma.subcategory.findMany({ where: { category_id: id }, select: { id: true } });
-  const currentIds = currentSubs.map((s) => s.id);
 
   // Deduplicate new names
   const newNames = Array.from(new Set(subcategoryValues));
