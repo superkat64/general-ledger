@@ -107,11 +107,13 @@ export async function deleteCategory(formData: FormData) {
   const id = formData.get("id")?.toString();
   if (!id) throw new Error("Category id is required");
 
-  const existing = await prisma.category.findFirst({ where: { id } })
-  if (!existing) throw new Error("Not found");
-  if (existing.user_id !== user.id) throw new Error("Not authorized");
+  const result = await prisma.category.deleteMany({
+    where: { id, user_id: user.id },
+  });
 
-  await prisma.category.deleteMany({ where: { id } });
+  if (result.count === 0) {
+    return { error: 'Not found or unauthorized' };
+  }
 
   revalidatePath("/categories");
 }

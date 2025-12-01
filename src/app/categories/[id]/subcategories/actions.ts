@@ -43,12 +43,21 @@ export async function deleteSubcategory(formData: FormData) {
   const id = formData.get("id")?.toString();
   if (!id) throw new Error("Subcategory id is required");
 
-  const existing = await prisma.subcategory.findFirst({ where: { id }, include: { category: true } });
-  if (!existing) throw new Error("Not found");
-  if (existing.category.user_id !== user.id) throw new Error("Not authorized");
+  const category_id = formData.get("category_id")?.toString();
 
-  await prisma.subcategory.delete({ where: { id } });
+  const result = await prisma.subcategory.deleteMany({
+    where: {
+      id,
+      category_id: category_id,
+      category: { user_id: user.id }
+    }
+  });
 
-  revalidatePath(`/categories/${existing.category_id}/subcategories`);
+  if (result.count === 0) {
+    // Either subcategory doesn't exist, or user doesn't own the category
+    return { error: 'Not found or unauthorized' };
+  }
+
+  revalidatePath(`/categories/${category_id}/subcategories`);
   return { ok: true };
 }

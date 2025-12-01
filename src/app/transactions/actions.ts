@@ -18,6 +18,27 @@ const transactionWithRelations = {
   institution: { select: { id: true, name: true, last_four_digits: true } },
 };
 
+export async function listTransactions() {
+  const user = await stackServerApp.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  return prisma.transaction.findMany({
+    where: { user_id: user.id },
+    orderBy: { transaction_date: "desc" },
+    include: transactionWithRelations
+  });
+}
+
+export async function getTransactionById(id: string) {
+  const user = await stackServerApp.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  return prisma.transaction.findFirst({
+    where: { id, user_id: user.id },
+    include: transactionWithRelations
+  });
+}
+
 export async function createTransaction(formData: FormData) {
   const user = await stackServerApp.getUser();
   if (!user) throw new Error("Not authenticated");
@@ -48,32 +69,14 @@ export async function deleteTransaction(formData: FormData) {
   const id = formData.get("id")?.toString()
   if (!id) throw new Error("Transaction id is required");
 
-  const existing = await prisma.transaction.findFirst({ where: { id } })
-  if (!existing) throw new Error("Not found");
-  if (existing.user_id !== user.id) throw new Error("Not owned by current user");
+  const result = await prisma.transaction.deleteMany({
+    where: { id, user_id: user.id },
+  });
 
-  await prisma.transaction.deleteMany({ where: { id } });
+  if (result.count === 0) {
+    return { error: 'Not found or unauthorized' };
+  }
 
   revalidatePath("/transactions");
 }
 
-export async function listTransactions() {
-  const user = await stackServerApp.getUser();
-  if (!user) throw new Error("Not authenticated");
-
-  return prisma.transaction.findMany({
-    where: { user_id: user.id },
-    orderBy: { transaction_date: "desc" },
-    include: transactionWithRelations
-  });
-}
-
-export async function getTransactionById(id: string) {
-  const user = await stackServerApp.getUser();
-  if (!user) throw new Error("Not authenticated");
-
-  return prisma.transaction.findFirst({
-    where: { id, user_id: user.id },
-    include: transactionWithRelations
-  });
-}

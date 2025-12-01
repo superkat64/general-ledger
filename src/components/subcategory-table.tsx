@@ -49,11 +49,12 @@ export default function SubcategoryTable({ subcategories }: SubcategoryTableProp
     })
   };
 
-  const deleteRow = async (id: string) => {
+  const deleteRow = async (id: string, category_id: string) => {
     if (!confirm("Delete this subcategory?")) return;
 
     const formData = new FormData();
     formData.append('id', id);
+    formData.append('category_id', category_id);
     startTransition(async () => {
       try {
         await deleteSubcategory(formData);
@@ -117,7 +118,7 @@ export default function SubcategoryTable({ subcategories }: SubcategoryTableProp
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => deleteRow(subcategory.id)}
+                      onClick={() => deleteRow(subcategory.id, subcategory.category_id)}
                       className={`${buttonClasses} text-red-600 hover:text-red-700`}
                       aria-label="Delete subcategory"
                     >
