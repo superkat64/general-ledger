@@ -6,6 +6,27 @@ import { prisma } from "@/lib/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { stackServerApp } from "@/stack/server";
 
+export async function listCategories() {
+  const user = await stackServerApp.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  return prisma.category.findMany({
+    where: { user_id: user.id },
+    orderBy: { name: "asc" },
+    include: { subcategory: { select: { id: true, name: true } } },
+  });
+}
+
+export async function getCategoryById(id: string) {
+  const user = await stackServerApp.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  return prisma.category.findFirst({
+    where: { id, user_id: user.id },
+    include: { subcategory: true },
+  });
+}
+
 export async function createCategory(formData: FormData) {
   const user = await stackServerApp.getUser();
   if (!user) throw new Error("Not authenticated");
@@ -34,58 +55,33 @@ export async function createCategory(formData: FormData) {
   revalidatePath("/categories");
 }
 
-export async function listCategories() {
-  const user = await stackServerApp.getUser();
-  if (!user) throw new Error("Not authenticated");
-
-  return prisma.category.findMany({
-    where: { user_id: user.id },
-    orderBy: { name: "asc" },
-    include: { subcategory: { select: { id: true, name: true } } },
-  });
-}
-
-export async function getCategoryById(id: string) {
-  const user = await stackServerApp.getUser();
-  if (!user) throw new Error("Not authenticated");
-
-  return prisma.category.findFirst({
-    where: { id, user_id: user.id },
-    include: { subcategory: true },
-  });
-}
-
 export async function updateCategory(formData: FormData) {
+  // Check user authentication
   const user = await stackServerApp.getUser();
   if (!user) throw new Error("Not authenticated");
   const user_id = user.id;
 
+  // Check required attributes
   const id = formData.get("id")?.toString();
   if (!id) throw new Error("Category id is required");
-
   const name = formData.get("name")?.toString();
   if (!name) throw new Error("Name is required");
 
+  // Format Category attributes
   const monthlyRaw = formData.get("monthly_budget")?.toString();
   const monthly_budget = monthlyRaw ? new Decimal(monthlyRaw) : null;
-
   const type = (formData.get("type")?.toString() ?? "expense") as any;
   const color = formData.get("color")?.toString() || null;
   const icon = formData.get("icon")?.toString() || null;
-
-  // Accept existing subcategory IDs to keep, and new subcategory names to create.
   const subcategoryValues = formData.getAll("subcategory").map((s) => s?.toString().trim()).filter(Boolean);
 
-  // Ensure the category exists and belongs to the user
+  // Verify Category exists & belongs to current user
   const existing = await prisma.category.findFirst({ where: { id, user_id } });
   if (!existing) throw new Error("Category not found or not authorized");
 
+  // Build prisma object - this action only supports adding new subcategories to categories.
   const updateData: any = { name, monthly_budget, type, color, icon };
-
-  // Deduplicate new names
   const newNames = Array.from(new Set(subcategoryValues));
-
-  // Build transaction operations: update category fields, create new subs
   const ops: any[] = [];
   ops.push(prisma.category.update({ where: { id }, data: updateData }));
   if (newNames.length > 0) {

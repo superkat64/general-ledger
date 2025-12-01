@@ -16,6 +16,7 @@ import { Plus } from "lucide-react"
 
 import { createCategory, updateCategory } from "@/app/categories/actions";
 import { useTransition } from "react";
+import { useRouter } from "next/router";
 import { Prisma } from '@prisma/client';
 
 type CategoryWithRelations = Prisma.categoryGetPayload<{ include: { subcategory: true } }>;
@@ -26,6 +27,7 @@ export default function CategoryForm({ category }: { category?: CategoryWithRela
   const [typeValue, setTypeValue] = useState<string>((category?.type as string) ?? "expense");
   const [color, setColor] = useState<string>(category?.color ?? "");
   const [icon, setIcon] = useState<string>(category?.icon ?? "");
+  const router = useRouter();
 
   // new subcategories added during this form session (removable)
   const [newSubs, setNewSubs] = useState<string[]>([]);
@@ -61,12 +63,17 @@ export default function CategoryForm({ category }: { category?: CategoryWithRela
     // include new subcategory names for creation
     newSubs.forEach((s) => formData.append('subcategory', s));
 
-    startTransition(() => {
-      if (category?.id) {
-        formData.append('id', category.id);
-        updateCategory(formData);
-      } else {
-        createCategory(formData);
+    startTransition(async () => {
+      try {
+        if (category?.id) {
+          formData.append('id', category.id);
+          await updateCategory(formData);
+        } else {
+          await createCategory(formData);
+        }
+        router.push('/categories');
+      } catch (error) {
+        console.error('Failed to save category:', error);
       }
     });
   }

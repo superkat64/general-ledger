@@ -16,10 +16,9 @@ type Subcategory = {
 
 interface SubcategoryTableProps {
   subcategories: Subcategory[];
-  categoryId: string;
 }
 
-export default function SubcategoryTable({ subcategories, categoryId }: SubcategoryTableProps) {
+export default function SubcategoryTable({ subcategories }: SubcategoryTableProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -45,7 +44,7 @@ export default function SubcategoryTable({ subcategories, categoryId }: Subcateg
         await updateSubcategoryName(formData);
         cancelEdit();
       } catch (error) {
-        console.error('Failed to updated subcategory:', error);
+        console.error('Failed to update subcategory:', error);
       }
     })
   };
@@ -56,7 +55,11 @@ export default function SubcategoryTable({ subcategories, categoryId }: Subcateg
     const formData = new FormData();
     formData.append('id', id);
     startTransition(async () => {
-      await deleteSubcategory(formData);
+      try {
+        await deleteSubcategory(formData);
+      } catch (error) {
+        console.error('Failed to delete subcategory:', error);
+      }
     });
   };
 

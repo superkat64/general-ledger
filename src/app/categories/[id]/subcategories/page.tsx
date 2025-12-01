@@ -13,7 +13,7 @@ export default async function SubcategoriesPage({ params }: { params: { id: stri
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">{cat?.icon} {cat.name} - Subcategories</h1>
-      <SubcategoryTable subcategories={subcats} categoryId={params.id} />
+      <SubcategoryTable subcategories={subcats} />
     </div>
   );
 }

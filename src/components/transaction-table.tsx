@@ -6,10 +6,10 @@ import { Table, TableHeader, TableHead, TableBody, TableFooter, TableRow, TableC
 import Link from "next/link";
 import { Trash2, Edit } from "lucide-react";
 
-import { Decimal } from "@prisma/client/runtime/library";
 import { deleteTransaction } from "@/app/transactions/actions";
 import { cn } from "@/lib/utils";
 
+import type { Decimal } from "@prisma/client/runtime/library";
 import type { TransactionWithRels } from "@/lib/types";
 
 type TransactionTableProps = {
@@ -80,6 +80,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                   onClick={() => deleteRow(t.id)}
                   aria-label={`Delete transaction`}
                   className="inline-flex items-center justify-center text-red-600 hover:text-red-700 p-1 rounded"
+                  disabled={isPending}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
