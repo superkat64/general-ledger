@@ -1,6 +1,6 @@
 // components/category-form.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import { Plus } from "lucide-react"
 
 import { createCategory, updateCategory } from "@/app/categories/actions";
-import { useTransition } from "react";
 import { Prisma } from '@prisma/client';
 
 type CategoryWithRelations = Prisma.categoryGetPayload<{ include: { subcategory: true } }>;
