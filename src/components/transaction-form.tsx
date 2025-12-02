@@ -18,7 +18,6 @@ import { TransactionWithRels, CategoryWithSubs } from "@/lib/types";
 import { subcategory } from "@prisma/client";
 
 export default function TransactionForm({ transaction }: { transaction?: TransactionWithRels }) {
-  console.log("$-------- LOAD/RELOAD ----------$")
 
   // Transaction attributes
   const [transactionDate, setTransactionDate] = useState<string>(
@@ -30,7 +29,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
     transaction ? transaction.amount?.toString() ?? "0.00" : "0.00"
   );
   const [transactionType, setTransactionType] = useState<string>(
-    transaction ? transaction.transaction_type : "expense"
+    transaction ? transaction.transaction_type : ""
   );
   const [description, setDescription] = useState<string>(
     transaction ? transaction.description ?? "" : ""
@@ -92,77 +91,91 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <Label htmlFor="date">Date</Label>
-      <Input
-        type="date"
-        name="transaction_date"
-        value={transactionDate}
-        onChange={(e) => setTransactionDate(e.currentTarget.value)}
-        required
-      />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-row items-center">
+        <Label htmlFor="date" className="pr-3">Date:</Label>
+        <Input
+          type="date"
+          className="w-fit"
+          name="transaction_date"
+          value={transactionDate}
+          onChange={(e) => setTransactionDate(e.currentTarget.value)}
+          required
+        />
+      </div>
+      <div className="flex flex-row gap-6 justify-between">
+        <div className="w-full">
+          <Label htmlFor="amount">Amount</Label>
+          <Input
+            type="number"
+            name="amount"
+            value={amount}
+            onChange={(e) => setAmount(e.currentTarget.value)}
+            step="0.01"
+            required
+          />
+        </div>
+        <div className="w-full">
+          <Label htmlFor="transaction_type">Type</Label>
+          <Select value={transactionType} onValueChange={setTransactionType}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="expense">Expense</SelectItem>
+              <SelectItem value="income">Income</SelectItem>
+              <SelectItem value="transfer">Transfer</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-      <Label htmlFor="amount">Amount</Label>
-      <Input
-        type="number"
-        name="amount"
-        value={amount}
-        onChange={(e) => setAmount(e.currentTarget.value)}
-        step="0.01"
-        required
-      />
+      <div className="flex flex-row gap-6 justify-between">
+        <div className="w-full">
+          <Label htmlFor="category">Category</Label>
+          <Select value={categoryId} onValueChange={changeCategories}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map(category => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-full">
+          <Label htmlFor="subcategory">Subcategory</Label>
+          <Select
+            value={subcategoryId}
+            onValueChange={setSubcategoryId}
+            disabled={subcategories.length === 0}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Subcategory" />
+            </SelectTrigger>
+            <SelectContent>
+              {subcategories.map(sub => (
+                <SelectItem key={sub.id} value={sub.id}>
+                  {sub.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="description">Description (Optional)</Label>
+        <Input
+          type="text"
+          name="description"
+          value={description}
+          onChange={(e) => setDescription(e.currentTarget.value)}
+        />
+      </div>
 
-      <Label htmlFor="transaction_type">Type</Label>
-      <Select value={transactionType} onValueChange={setTransactionType}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select type" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="expense">Expense</SelectItem>
-          <SelectItem value="income">Income</SelectItem>
-          <SelectItem value="transfer">Transfer</SelectItem>
-        </SelectContent>
-      </Select>
-
-      <Label htmlFor="description">Description (Optional)</Label>
-      <Input
-        type="text"
-        name="description"
-        value={description}
-        onChange={(e) => setDescription(e.currentTarget.value)}
-      />
-
-      <Label htmlFor="category">Category</Label>
-      <Select value={categoryId} onValueChange={changeCategories}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select Category" />
-        </SelectTrigger>
-        <SelectContent>
-          {categories.map(category => (
-            <SelectItem key={category.id} value={category.id}>
-              {category.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      <Label htmlFor="subcategory">Subcategory</Label>
-      <Select
-        value={subcategoryId}
-        onValueChange={setSubcategoryId}
-        disabled={subcategories.length === 0}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select Subcategory" />
-        </SelectTrigger>
-        <SelectContent>
-          {subcategories.map(sub => (
-            <SelectItem key={sub.id} value={sub.id}>
-              {sub.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
 
       <Button type="submit" disabled={isPending}>
         {isPending ? "Saving..." : "Save Transaction"}
