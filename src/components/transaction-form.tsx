@@ -15,7 +15,7 @@ import {
 import { createTransaction, updateTransaction } from "@/app/transactions/actions";
 import { getCategoriesWithSubcategories } from "@/app/categories/actions";
 import { TransactionWithRels, CategoryWithSubs } from "@/lib/types";
-import { subcategory } from "@prisma/client";
+import type { subcategory } from "@prisma/client";
 
 export default function TransactionForm({ transaction }: { transaction?: TransactionWithRels }) {
 
@@ -76,7 +76,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
     const formData = new FormData();
     formData.append("transaction_date", transactionDate);
     formData.append("amount", amount.toString());
-    formData.append("transaction_type", transactionType);
+    if (transactionType) formData.append("transaction_type", transactionType);
     if (description) formData.append("description", description);
     if (subcategoryId) formData.append("subcategory_id", subcategoryId);
 
@@ -95,6 +95,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
       <div className="flex flex-row items-center">
         <Label htmlFor="date" className="pr-3">Date:</Label>
         <Input
+          id="transaction_date"
           type="date"
           className="w-fit"
           name="transaction_date"
@@ -107,6 +108,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
         <div className="w-full">
           <Label htmlFor="amount">Amount</Label>
           <Input
+            id="amount"
             type="number"
             name="amount"
             value={amount}
@@ -169,6 +171,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
       <div>
         <Label htmlFor="description">Description (Optional)</Label>
         <Input
+          id="description"
           type="text"
           name="description"
           value={description}

@@ -85,7 +85,7 @@ export async function updateTransaction(formData: FormData) {
   const existing = await prisma.transaction.findFirst({ where: { id, user_id: user.id } });
   if (!existing) throw new Error("Not found or not authorized");
 
-  await prisma.transaction.update({ where: { id }, data: { transaction_date: new Date(dateRaw), amount, transaction_type, description, subcategory_id } });
+  await prisma.transaction.update({ where: { id, user_id: user.id }, data: { transaction_date: new Date(dateRaw), amount, transaction_type, description, subcategory_id } });
 
   revalidatePath("/transactions");
 }

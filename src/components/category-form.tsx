@@ -77,12 +77,12 @@ export default function CategoryForm({ category }: { category?: CategoryWithRela
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md">
       <div>
         <Label htmlFor="name">Name</Label>
-        <Input type="text" name="name" value={name} onChange={(e) => setName(e.currentTarget.value)} required />
+        <Input id="name" type="text" name="name" value={name} onChange={(e) => setName(e.currentTarget.value)} required />
       </div>
       <div className="flex flex-row gap-6 justify-between">
         <div className="w-full">
           <Label htmlFor="monthly_budget">Monthly Budget</Label>
-          <Input type="number" name="monthly_budget" value={monthlyBudget} onChange={(e) => setMonthlyBudget(e.currentTarget.value)} step="0.01" />
+          <Input id="month_budget" type="number" name="monthly_budget" value={monthlyBudget} onChange={(e) => setMonthlyBudget(e.currentTarget.value)} step="0.01" />
         </div>
         <div className="w-full">
           <Label htmlFor="type">Type</Label>
@@ -101,11 +101,11 @@ export default function CategoryForm({ category }: { category?: CategoryWithRela
       <div className="flex flex-row gap-6 justify-between">
         <div className="w-full">
           <Label htmlFor="color">Color</Label>
-          <Input type="text" name="color" value={color} onChange={(e) => setColor(e.currentTarget.value)} />
+          <Input id="color" type="text" name="color" value={color} onChange={(e) => setColor(e.currentTarget.value)} />
         </div>
         <div className="w-full">
           <Label htmlFor="icon">Icon</Label>
-          <Input type="text" name="icon" value={icon} onChange={(e) => setIcon(e.currentTarget.value)} />
+          <Input id="icon" type="text" name="icon" value={icon} onChange={(e) => setIcon(e.currentTarget.value)} />
         </div>
       </div>
       <Label htmlFor="subcategories">Subcategories</Label>
