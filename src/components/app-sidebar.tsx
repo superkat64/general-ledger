@@ -40,7 +40,7 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/" className="font-medium">
+                  <Link href="/institutions" className="font-medium">
                     <Landmark />
                     Institutions
                   </Link>

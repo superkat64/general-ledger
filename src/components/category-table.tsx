@@ -72,7 +72,9 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
             <TableCell className={cn("text-right")}>{c.monthly_budget ? '$' + formatAmount(c.monthly_budget) : '-'}</TableCell>
             <TableCell>
               {c.color ? (
-                <><div className="w-5 h-5 rounded" style={{ backgroundColor: c.color }} title={c.color} /> #{c.color} </>
+                <div className="flex flex-row gap-2">
+                  <div className="w-5 h-5 rounded" style={{ backgroundColor: c.color }} title={c.color} /> {c.color}
+                </div>
               ) : (
                 "-"
               )}
