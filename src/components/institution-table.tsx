@@ -11,6 +11,15 @@ interface InstitutionTableProps {
   institutions: institution[];
 }
 
+/**
+ * Render a table of institutions with per-row edit and delete actions.
+ *
+ * Deleting a row prompts the user for confirmation and, if confirmed, calls `deleteInstitution`
+ * with a FormData containing the institution `id`.
+ *
+ * @param institutions - Array of institution records to display. Each record must include `id`, `name`, and may include `color` and `last_four_digits`.
+ * @returns The JSX table element that lists the provided institutions with action controls.
+ */
 export default function InstitutionTable({ institutions }: InstitutionTableProps) {
   const deleteRow = async (id: string) => {
     if (!confirm("Delete this Institution?")) return;

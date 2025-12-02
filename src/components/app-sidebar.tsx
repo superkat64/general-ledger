@@ -13,6 +13,14 @@ import {
 import Link from "next/link";
 import { ReceiptText, Landmark, NotebookPen } from 'lucide-react';
 
+/**
+ * Renders the application's left navigation sidebar with grouped resource links.
+ *
+ * The sidebar includes a header, a scrollable content area with a "Resources" group
+ * containing navigation items for Transactions, Categories, and Institutions, and a footer.
+ *
+ * @returns The sidebar JSX element containing the grouped navigation links
+ */
 export function AppSidebar() {
   return (
     <Sidebar>

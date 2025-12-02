@@ -10,6 +10,15 @@ import { createInstitution, updateInstitution } from "@/app/institutions/actions
 import type { institution } from '@prisma/client';
 
 
+/**
+ * Render a form for creating or updating an institution.
+ *
+ * The form is pre-filled when `institution` is provided and submits collected fields
+ * to the appropriate server action to create a new institution or update an existing one.
+ *
+ * @param institution - Optional existing institution data used to initialize the form fields
+ * @returns The form element for creating or updating an institution
+ */
 export default function InstitutionForm({ institution }: { institution?: institution }) {
   const [name, setName] = useState<string>(institution?.name ?? "");
   const [color, setColor] = useState<string>(institution?.color ?? "");

@@ -3,6 +3,14 @@ import InstitutionTable from "@/components/institution-table";
 import Link from "next/link";
 import { getInstitutions } from "@/app/institutions/actions";
 
+/**
+ * Render the Institutions page with a header, an "Add Institution" link, and a table of institutions.
+ *
+ * Fetches institution data and returns a JSX structure that displays the page header and an InstitutionTable
+ * populated with the retrieved institutions.
+ *
+ * @returns A JSX element containing the institutions page UI: header, "Add Institution" link, and InstitutionTable with the fetched institutions.
+ */
 export default async function InstitutionsPage() {
   const institutions = await getInstitutions();
   return (
