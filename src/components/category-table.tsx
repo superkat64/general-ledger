@@ -1,4 +1,4 @@
-//components/category-table.tsx
+// components/category-table.tsx
 "use client";
 
 import { useTransition } from "react";
@@ -47,10 +47,10 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
   return (
     <Table>
       <TableHeader>
-        <TableRow>
+        <TableRow className="hover:bg-transparent">
           <TableHead>Name</TableHead>
           <TableHead>Type</TableHead>
-          <TableHead className={cn("text-right")}>Monthly</TableHead>
+          <TableHead className={cn("text-right")}>Monthly Budget</TableHead>
           <TableHead>Color</TableHead>
           <TableHead>Icon</TableHead>
           <TableHead>Subcategories</TableHead>
@@ -68,8 +68,8 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
         {categories.map((c) => (
           <TableRow key={c.id}>
             <TableCell>{c.name}</TableCell>
-            <TableCell>{c.type}</TableCell>
-            <TableCell className={cn("text-right")}>${formatAmount(c.monthly_budget)}</TableCell>
+            <TableCell className="capitalize">{c.type}</TableCell>
+            <TableCell className={cn("text-right")}>{c.monthly_budget ? '$' + formatAmount(c.monthly_budget) : '-'}</TableCell>
             <TableCell>
               {c.color ? (
                 <><div className="w-5 h-5 rounded" style={{ backgroundColor: c.color }} title={c.color} /> #{c.color} </>
@@ -82,7 +82,7 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
               {c.subcategory && c.subcategory.length > 0 ? (
                 <div className="flex gap-2 flex-wrap">
                   {c.subcategory.map((s) => (
-                    <span key={s.id} className="text-sm px-2 py-1 bg-gray-100 rounded">
+                    <span key={s.id} className="text-sm px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded">
                       {s.name}
                     </span>
                   ))}
