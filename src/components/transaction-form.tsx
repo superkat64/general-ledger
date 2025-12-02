@@ -83,17 +83,17 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
     const formData = new FormData();
     formData.append("transaction_date", transactionDate);
     formData.append("amount", amount.toString());
-    if (transactionType) formData.append("transaction_type", transactionType);
+    if (transactionType !== "") formData.append("transaction_type", transactionType);
     if (description) formData.append("description", description);
     if (subcategoryId) formData.append("subcategory_id", subcategoryId);
 
-    startTransition(() => {
+    startTransition(async () => {
       try {
         if (transaction?.id) {
           formData.append("id", transaction.id);
-          updateTransaction(formData);
+          await updateTransaction(formData);
         } else {
-          createTransaction(formData);
+          await createTransaction(formData);
         }
         window.location.href = '/transactions';
       } catch (error) {
@@ -106,7 +106,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-row items-center">
-        <Label htmlFor="date" className="pr-3">Date:</Label>
+        <Label htmlFor="transaction_date" className="pr-3">Date:</Label>
         <Input
           id="transaction_date"
           type="date"
@@ -132,7 +132,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
         </div>
         <div className="w-full">
           <Label htmlFor="transaction_type">Type</Label>
-          <Select value={transactionType} onValueChange={setTransactionType} required>
+          <Select value={transactionType} onValueChange={setTransactionType}>
             <SelectTrigger>
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
