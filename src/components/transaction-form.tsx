@@ -1,7 +1,9 @@
+// components/transaction-form.tsx
 "use client";
-import React from "react";
+import React, { useState, useTransition, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -10,41 +12,190 @@ import {
   SelectValue
 } from "@/components/ui/select";
 
-import { createTransaction } from "@/app/transactions/actions";
-import { useTransition } from "react";
+import { createTransaction, updateTransaction } from "@/app/transactions/actions";
+import { getCategoriesWithSubcategories } from "@/app/categories/actions";
+import { TransactionWithRels, CategoryWithSubs } from "@/lib/types";
+import type { subcategory } from "@prisma/client";
 
-export default function TransactionForm() {
+export default function TransactionForm({ transaction }: { transaction?: TransactionWithRels }) {
+
+  // Transaction attributes
+  const [transactionDate, setTransactionDate] = useState<string>(
+    transaction
+      ? new Date(transaction.transaction_date).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0]
+  );
+  const [amount, setAmount] = useState<string>(
+    transaction ? transaction.amount?.toString() ?? "0.00" : "0.00"
+  );
+  const [transactionType, setTransactionType] = useState<string>(
+    transaction ? transaction.transaction_type : ""
+  );
+  const [description, setDescription] = useState<string>(
+    transaction ? transaction.description ?? "" : ""
+  );
+  const [subcategoryId, setSubcategoryId] = useState<string>(
+    transaction ? transaction.subcategory?.id ?? "" : ""
+  );
+
+  // Category state
+  const [categoryId, setCategoryId] = useState<string>(
+    transaction ? transaction.subcategory?.category_id ?? "" : ""
+  );
+  const [subcategories, setSubcategories] = useState<subcategory[]>([]);
+  const [categories, setCategories] = useState<CategoryWithSubs[]>([]);
   const [isPending, startTransition] = useTransition();
+
+  const transactionId = transaction?.id;
+  const existingCategoryId = transaction?.subcategory?.category_id;
+
+  // Load categories on mount
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const cats = await getCategoriesWithSubcategories();
+        setCategories(cats);
+
+        // If editing, populate subcategories for the existing category
+        if (existingCategoryId) {
+          const existingCategory = cats.find(c => c.id === existingCategoryId);
+          if (existingCategory) {
+            setSubcategories(existingCategory.subcategory);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+      }
+    }
+    loadCategories();
+  }, [transactionId, existingCategoryId]);
+
+  const changeCategories = (newCategoryId: string) => {
+    setCategoryId(newCategoryId);
+    const selectedCategory = categories.find(c => c.id === newCategoryId);
+    setSubcategories(selectedCategory?.subcategory || []);
+    setSubcategoryId(""); // Reset subcategory when category changes
+  };
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    startTransition(() => {
-      createTransaction(formData);
+
+    const formData = new FormData();
+    formData.append("transaction_date", transactionDate);
+    formData.append("amount", amount.toString());
+    if (transactionType !== "") formData.append("transaction_type", transactionType);
+    if (description) formData.append("description", description);
+    if (subcategoryId) formData.append("subcategory_id", subcategoryId);
+
+    startTransition(async () => {
+      try {
+        if (transaction?.id) {
+          formData.append("id", transaction.id);
+          await updateTransaction(formData);
+        } else {
+          await createTransaction(formData);
+        }
+        window.location.href = '/transactions';
+      } catch (error) {
+        console.error("Failed to save transaction:", error);
+      }
+
     });
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <Label htmlFor="date">Date</Label>
-      <Input type="date" name="transaction_date" required />
-      <Label htmlFor="amount">Amount</Label>
-      <Input type="number" name="amount" step="0.01" required />
-      <Label htmlFor="transaction_type">Type</Label>
-      <Select>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select category" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="expense">Expense</SelectItem>
-          <SelectItem value="income">Income</SelectItem>
-        </SelectContent>
-      </Select>
-      <Label htmlFor="description">Description (Options)</Label>
-      <Input type="text" name="description" />
-      <button type="submit" disabled={isPending} className="bg-blue-600 text-white py-2 rounded">
-        {isPending ? "Submitting..." : "Add Transaction"}
-      </button>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-row items-center">
+        <Label htmlFor="transaction_date" className="pr-3">Date:</Label>
+        <Input
+          id="transaction_date"
+          type="date"
+          className="w-fit"
+          name="transaction_date"
+          value={transactionDate}
+          onChange={(e) => setTransactionDate(e.currentTarget.value)}
+          required
+        />
+      </div>
+      <div className="flex flex-row gap-6 justify-between">
+        <div className="w-full">
+          <Label htmlFor="amount">Amount</Label>
+          <Input
+            id="amount"
+            type="number"
+            name="amount"
+            value={amount}
+            onChange={(e) => setAmount(e.currentTarget.value)}
+            step="0.01"
+            required
+          />
+        </div>
+        <div className="w-full">
+          <Label htmlFor="transaction_type">Type</Label>
+          <Select value={transactionType} onValueChange={setTransactionType}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="expense">Expense</SelectItem>
+              <SelectItem value="income">Income</SelectItem>
+              <SelectItem value="transfer">Transfer</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex flex-row gap-6 justify-between">
+        <div className="w-full">
+          <Label htmlFor="category">Category</Label>
+          <Select value={categoryId} onValueChange={changeCategories}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map(category => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-full">
+          <Label htmlFor="subcategory">Subcategory</Label>
+          <Select
+            value={subcategoryId}
+            onValueChange={setSubcategoryId}
+            disabled={subcategories.length === 0}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Subcategory" />
+            </SelectTrigger>
+            <SelectContent>
+              {subcategories.map(sub => (
+                <SelectItem key={sub.id} value={sub.id}>
+                  {sub.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="description">Description (Optional)</Label>
+        <Input
+          id="description"
+          type="text"
+          name="description"
+          value={description}
+          onChange={(e) => setDescription(e.currentTarget.value)}
+        />
+      </div>
+
+
+      <Button type="submit" disabled={isPending}>
+        {isPending ? "Saving..." : "Save Transaction"}
+      </Button>
     </form>
   );
 }

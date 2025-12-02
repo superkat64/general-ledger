@@ -1,10 +1,10 @@
 // app/categories/page.tsx
 import CategoryTable from "@/components/category-table";
 import Link from "next/link";
-import { listCategories } from "@/app/categories/actions";
+import { getCategoriesWithSubcategories } from "@/app/categories/actions";
 
 export default async function CategoriesPage() {
-  const cats = await listCategories();
+  const cats = await getCategoriesWithSubcategories();
 
   return (
     <div className="p-8">

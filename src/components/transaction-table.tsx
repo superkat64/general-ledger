@@ -18,7 +18,7 @@ type TransactionTableProps = {
 
 function formatDate(d: Date | string) {
   const date = d instanceof Date ? d : new Date(d);
-  return date.toISOString().split("T")[0];
+  return date.toDateString();
 }
 
 function formatAmount(amount: number | Decimal | string) {
@@ -47,7 +47,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
   return (
     <Table>
       <TableHeader>
-        <TableRow>
+        <TableRow className="hover:bg-transparent">
           <TableHead>Date</TableHead>
           <TableHead className={cn("text-right")}>Amount</TableHead>
           <TableHead>Type</TableHead>
@@ -62,7 +62,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
           <TableRow key={t.id}>
             <TableCell>{formatDate(t.transaction_date)}</TableCell>
             <TableCell className={cn("text-right")}>${formatAmount(t.amount)}</TableCell>
-            <TableCell>{t.transaction_type}</TableCell>
+            <TableCell className="capitalize">{t.transaction_type}</TableCell>
             <TableCell>{t.subcategory?.category?.name ?? "-"}</TableCell>
             <TableCell>{t.subcategory?.name ?? "-"}</TableCell>
             <TableCell>{t.description ?? "-"}</TableCell>

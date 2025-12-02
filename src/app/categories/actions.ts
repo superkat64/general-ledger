@@ -6,14 +6,14 @@ import { prisma } from "@/lib/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { stackServerApp } from "@/stack/server";
 
-export async function listCategories() {
+export async function getCategoriesWithSubcategories() {
   const user = await stackServerApp.getUser();
   if (!user) throw new Error("Not authenticated");
 
   return prisma.category.findMany({
     where: { user_id: user.id },
     orderBy: { name: "asc" },
-    include: { subcategory: { select: { id: true, name: true } } },
+    include: { subcategory: true },
   });
 }
 

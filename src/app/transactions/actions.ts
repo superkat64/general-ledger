@@ -54,11 +54,39 @@ export async function createTransaction(formData: FormData) {
 
   const description = formData.get("description")?.toString() || null;
 
+  const subcategory_id = formData.get("subcategory_id")?.toString() || null;
+
   await prisma.transaction.create({
-    data: { user_id, transaction_date: new Date(dateRaw), amount, transaction_type, description },
+    data: { user_id, transaction_date: new Date(dateRaw), amount, transaction_type, description, subcategory_id },
   });
 
   // revalidate the list page
+  revalidatePath("/transactions");
+}
+
+export async function updateTransaction(formData: FormData) {
+  const user = await stackServerApp.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const id = formData.get("id")?.toString();
+  if (!id) throw new Error("Transaction id is required");
+
+  const amountRaw = formData.get("amount")?.toString() ?? "0";
+  const amount = new Decimal(amountRaw);
+
+  const dateRaw = formData.get("transaction_date")?.toString();
+  if (!dateRaw) throw new Error("Transaction date is required");
+
+  const transaction_type = (formData.get("transaction_type")?.toString() ?? "expense") as any;
+  const description = formData.get("description")?.toString() || null;
+  const subcategory_id = formData.get("subcategory_id")?.toString() || null;
+
+  // ensure ownership
+  const existing = await prisma.transaction.findFirst({ where: { id, user_id: user.id } });
+  if (!existing) throw new Error("Not found or not authorized");
+
+  await prisma.transaction.update({ where: { id, user_id: user.id }, data: { transaction_date: new Date(dateRaw), amount, transaction_type, description, subcategory_id } });
+
   revalidatePath("/transactions");
 }
 
