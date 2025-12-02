@@ -1,3 +1,4 @@
+// app/transactions/new/page.tsx
 import TransactionForm from "@/components/transaction-form";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";

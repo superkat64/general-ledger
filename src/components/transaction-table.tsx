@@ -47,7 +47,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
   return (
     <Table>
       <TableHeader>
-        <TableRow>
+        <TableRow className="hover:bg-transparent">
           <TableHead>Date</TableHead>
           <TableHead className={cn("text-right")}>Amount</TableHead>
           <TableHead>Type</TableHead>
