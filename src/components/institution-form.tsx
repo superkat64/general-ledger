@@ -1,6 +1,7 @@
 // components/institution-form.tsx
 "use client"
 import React, { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import type { institution } from '@prisma/client';
 
 
 export default function InstitutionForm({ institution }: { institution?: institution }) {
+  const router = useRouter();
   const [name, setName] = useState<string>(institution?.name ?? "");
   const [color, setColor] = useState<string>(institution?.color ?? "");
   const [lastFourDigits, setLastFourDigits] = useState<string>(institution?.last_four_digits ?? "");
@@ -31,8 +33,9 @@ export default function InstitutionForm({ institution }: { institution?: institu
         } else {
           await createInstitution(formData);
         }
+        router.push("/institutions");
       } catch (error) {
-        console.error('Failed to save institution:', error);
+        alert("Failed to save institution. Please try again.");
       }
     });
   }
@@ -46,7 +49,14 @@ export default function InstitutionForm({ institution }: { institution?: institu
         </div>
         <div className="w-full">
           <Label htmlFor="color">Color</Label>
-          <Input id="color" type="text" name="color" value={color} onChange={e => setColor(e.currentTarget.value)} />
+          <Input
+            id="color"
+            type="text"
+            name="color"
+            value={color}
+            onChange={e => setColor(e.currentTarget.value)}
+            pattern="^#?[0-9A-Fa-f]{6}$"
+            placeholder="#RRGGBB" />
         </div>
       </div>
       <div>
@@ -56,7 +66,10 @@ export default function InstitutionForm({ institution }: { institution?: institu
           type="text"
           name="lastFourDigits"
           value={lastFourDigits}
-          onChange={e => setLastFourDigits(e.currentTarget.value)} />
+          onChange={e => setLastFourDigits(e.currentTarget.value)}
+          pattern="[0-9]{4}"
+          maxLength={4}
+          placeholder="1234" />
       </div>
       <Button type="submit" disabled={isPending}>
         {isPending ? "Saving..." : "Save Institution"}

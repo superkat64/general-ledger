@@ -36,10 +36,10 @@ export default function InstitutionTable({ institutions }: InstitutionTableProps
             <TableCell>{institution.name}</TableCell>
             <TableCell>
               {institution.color ? (
-                <>
+                <div className="flex flex-row gap-2">
                   <div className="w-5 h-5 rounded" style={{ backgroundColor: institution.color }} title={institution.color} />
-                  #{institution.color}
-                </>
+                  {institution.color}
+                </div>
               ) : (
                 "-"
               )}

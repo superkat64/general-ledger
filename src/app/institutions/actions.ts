@@ -40,7 +40,6 @@ export async function createInstitution(formData: FormData) {
 export async function updateInstitution(formData: FormData) {
   const user = await stackServerApp.getUser();
   if (!user) throw new Error("Not Authenticated");
-  const user_id = user.id;
 
   const id = formData.get("id")?.toString();
   if (!id) throw new Error("Institution id is required");
@@ -51,7 +50,7 @@ export async function updateInstitution(formData: FormData) {
   const color = formData.get("color")?.toString() || null;
   const last_four_digits = formData.get('last_four_digits')?.toString() || null;
 
-  await prisma.institution.update({ where: { id }, data: { user_id, name, color, last_four_digits } });
+  await prisma.institution.update({ where: { id, user_id: user.id }, data: { name, color, last_four_digits } });
   revalidatePath("/institutions");
 }
 
@@ -67,7 +66,7 @@ export async function deleteInstitution(formData: FormData) {
   });
 
   if (result.count === 0) {
-    return { error: 'Not found or unauthorized' };
+    throw new Error('Not found or unauthorized');
   }
   revalidatePath("/institutions");
 }
