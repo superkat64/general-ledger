@@ -46,22 +46,29 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
   const [categories, setCategories] = useState<CategoryWithSubs[]>([]);
   const [isPending, startTransition] = useTransition();
 
+  const transactionId = transaction?.id;
+  const existingCategoryId = transaction?.subcategory?.category_id;
+
   // Load categories on mount
   useEffect(() => {
     async function loadCategories() {
-      const cats = await getCategoriesWithSubcategories();
-      setCategories(cats);
+      try {
+        const cats = await getCategoriesWithSubcategories();
+        setCategories(cats);
 
-      // If editing, populate subcategories for the existing category
-      if (transaction?.subcategory?.category_id) {
-        const existingCategory = cats.find(c => c.id === transaction.subcategory?.category_id);
-        if (existingCategory) {
-          setSubcategories(existingCategory.subcategory);
+        // If editing, populate subcategories for the existing category
+        if (existingCategoryId) {
+          const existingCategory = cats.find(c => c.id === existingCategoryId);
+          if (existingCategory) {
+            setSubcategories(existingCategory.subcategory);
+          }
         }
+      } catch (error) {
+        console.error("Failed to load categories:", error);
       }
     }
     loadCategories();
-  }, []);
+  }, [transactionId, existingCategoryId]);
 
   const changeCategories = (newCategoryId: string) => {
     setCategoryId(newCategoryId);
@@ -81,12 +88,18 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
     if (subcategoryId) formData.append("subcategory_id", subcategoryId);
 
     startTransition(() => {
-      if (transaction?.id) {
-        formData.append("id", transaction.id);
-        updateTransaction(formData);
-      } else {
-        createTransaction(formData);
+      try {
+        if (transaction?.id) {
+          formData.append("id", transaction.id);
+          updateTransaction(formData);
+        } else {
+          createTransaction(formData);
+        }
+        window.location.href = '/transactions';
+      } catch (error) {
+        console.error("Failed to save transaction:", error);
       }
+
     });
   }
 
@@ -119,7 +132,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
         </div>
         <div className="w-full">
           <Label htmlFor="transaction_type">Type</Label>
-          <Select value={transactionType} onValueChange={setTransactionType}>
+          <Select value={transactionType} onValueChange={setTransactionType} required>
             <SelectTrigger>
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
