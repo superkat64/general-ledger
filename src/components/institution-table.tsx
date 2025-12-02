@@ -49,16 +49,16 @@ export default function InstitutionTable({ institutions }: InstitutionTableProps
               <div className="flex items-center gap-2">
                 <Link
                   href={`/institutions/${institution.id}/edit`}
-                  aria-label={`Edit category ${institution.name}`}
-                  title={`Edit category ${institution.name}`}
+                  aria-label={`Edit institution ${institution.name}`}
+                  title={`Edit institution ${institution.name}`}
                   className="inline-flex items-center justify-center text-blue-600 hover:text-blue-700 p-1 rounded"
                 >
                   <Edit className="w-4 h-4" />
                 </Link>
                 <button
                   onClick={() => deleteRow(institution.id)}
-                  aria-label={`Delete category ${institution.name}`}
-                  title={`Delete category ${institution.name}`}
+                  aria-label={`Delete institution ${institution.name}`}
+                  title={`Delete institution ${institution.name}`}
                   className="inline-flex items-center justify-center text-red-600 hover:text-red-700 p-1 rounded"
                 >
                   <Trash2 className="w-4 h-4" />
