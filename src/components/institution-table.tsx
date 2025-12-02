@@ -17,7 +17,12 @@ export default function InstitutionTable({ institutions }: InstitutionTableProps
 
     const formData = new FormData();
     formData.append('id', id);
-    deleteInstitution(formData);
+    try {
+      await deleteInstitution(formData);
+    } catch (error) {
+      alert("Failed to delete institution. Please try again.");
+      console.error(error);
+    }
   };
 
   return (
