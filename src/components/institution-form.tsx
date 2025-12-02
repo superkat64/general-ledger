@@ -39,12 +39,12 @@ export default function InstitutionForm({ institution }: { institution?: institu
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md">
-      <div className="flex flex-row">
-        <div>
+      <div className="flex flex-row gap-5">
+        <div className="w-full">
           <Label htmlFor="name">Name</Label>
           <Input id="name" type="text" name="name" value={name} onChange={e => setName(e.currentTarget.value)} required />
         </div>
-        <div>
+        <div className="w-full">
           <Label htmlFor="color">Color</Label>
           <Input id="color" type="text" name="color" value={color} onChange={e => setColor(e.currentTarget.value)} />
         </div>

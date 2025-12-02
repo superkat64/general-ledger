@@ -48,7 +48,7 @@ export default function InstitutionTable({ institutions }: InstitutionTableProps
             <TableCell>
               <div className="flex items-center gap-2">
                 <Link
-                  href={`/categories/${institution.id}/edit`}
+                  href={`/institutions/${institution.id}/edit`}
                   aria-label={`Edit category ${institution.name}`}
                   title={`Edit category ${institution.name}`}
                   className="inline-flex items-center justify-center text-blue-600 hover:text-blue-700 p-1 rounded"
