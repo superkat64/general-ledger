@@ -46,7 +46,9 @@ export default function RootLayout({
                   <AppSidebar />
                   <main className="w-full">
                     <Header />
-                    {children}
+                    <div className="max-w-7xl mx-auto">
+                      {children}
+                    </div>
                   </main>
                 </SidebarProvider>
               </StackTheme>
