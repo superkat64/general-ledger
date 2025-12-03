@@ -50,7 +50,7 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
         <TableRow className="hover:bg-transparent">
           <TableHead>Name</TableHead>
           <TableHead>Type</TableHead>
-          <TableHead className={cn("text-right min-w-[150px]")}>Monthly Budget</TableHead>
+          <TableHead className='min-w-[150px]'>Monthly Budget</TableHead>
           <TableHead>Color</TableHead>
           <TableHead>Icon</TableHead>
           <TableHead>Subcategories</TableHead>
@@ -69,7 +69,7 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
           <TableRow key={c.id}>
             <TableCell>{c.name}</TableCell>
             <TableCell className="capitalize">{c.type}</TableCell>
-            <TableCell className={cn("text-right")}>{c.monthly_budget ? '$' + formatAmount(c.monthly_budget) : '-'}</TableCell>
+            <TableCell>{c.monthly_budget ? '$' + formatAmount(c.monthly_budget) : '-'}</TableCell>
             <TableCell>
               {c.color ? (
                 <div className="flex flex-row gap-2">

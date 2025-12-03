@@ -15,7 +15,7 @@ export default async function EditTransactionPage({ params }: { params: { id: st
         <ChevronLeft />
         Back
       </Link>
-      <div className="min-h-screen flex flex-col items-center justify-center p-8">
+      <div className="flex flex-col items-center justify-center sm:p-20 font-[family-name:var(--font-geist-sans)]">
         <main className="w-full max-w-md">
           <div>
             <h1 className="text-4xl font-bold text-center mb-8">

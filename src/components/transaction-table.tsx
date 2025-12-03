@@ -7,7 +7,6 @@ import Link from "next/link";
 import { Trash2, Edit } from "lucide-react";
 
 import { deleteTransaction } from "@/app/transactions/actions";
-import { cn } from "@/lib/utils";
 
 import type { Decimal } from "@prisma/client/runtime/library";
 import type { TransactionWithRels } from "@/lib/types";
@@ -49,8 +48,9 @@ export default function TransactionTable({ transactions }: TransactionTableProps
       <TableHeader>
         <TableRow className="hover:bg-transparent">
           <TableHead>Date</TableHead>
-          <TableHead className={cn("text-right")}>Amount</TableHead>
+          <TableHead>Amount</TableHead>
           <TableHead>Type</TableHead>
+          <TableHead>Institution</TableHead>
           <TableHead>Category</TableHead>
           <TableHead>Subcategory</TableHead>
           <TableHead>Description</TableHead>
@@ -61,8 +61,9 @@ export default function TransactionTable({ transactions }: TransactionTableProps
         {transactions.map((t) => (
           <TableRow key={t.id}>
             <TableCell>{formatDate(t.transaction_date)}</TableCell>
-            <TableCell className={cn("text-right")}>${formatAmount(t.amount)}</TableCell>
+            <TableCell>${formatAmount(t.amount)}</TableCell>
             <TableCell className="capitalize">{t.transaction_type}</TableCell>
+            <TableCell>{t.institution?.name ?? '-'}</TableCell>
             <TableCell>{t.subcategory?.category?.name ?? "-"}</TableCell>
             <TableCell>{t.subcategory?.name ?? "-"}</TableCell>
             <TableCell>{t.description ?? "-"}</TableCell>

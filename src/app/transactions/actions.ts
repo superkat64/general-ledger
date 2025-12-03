@@ -18,7 +18,33 @@ const transactionWithRelations = {
   institution: { select: { id: true, name: true, last_four_digits: true } },
 };
 
-export async function listTransactions() {
+const buildPrismaUpdateCreateDataObject = (formData: FormData) => {
+  const amountRaw = formData.get("amount")?.toString() ?? "0";
+  if (!amountRaw || isNaN(Number(amountRaw))) {
+    throw new Error("Invalid amount");
+  }
+  const amount = new Decimal(amountRaw);
+
+  const dateRaw = formData.get("transaction_date")?.toString();
+  if (!dateRaw) throw new Error("Transaction date is required");
+  const transaction_date = new Date(dateRaw);
+  if (isNaN(transaction_date.getTime())) {
+    throw new Error("Invalid transaction date");
+  }
+
+  const transaction_type = formData.get("transaction_type")?.toString() ?? "expense";
+  if (!["income", "expense"].includes(transaction_type)) {
+    throw new Error("Invalid transaction type");
+  }
+
+  const description = formData.get("description")?.toString() || null;
+  const subcategory_id = formData.get("subcategory_id")?.toString() || null;
+  const institution_id = formData.get("institution_id")?.toString() || null;
+
+  return { transaction_date, amount, transaction_type, description, subcategory_id, institution_id };
+}
+
+export async function getTransactions() {
   const user = await stackServerApp.getUser();
   if (!user) throw new Error("Not authenticated");
 
@@ -44,20 +70,9 @@ export async function createTransaction(formData: FormData) {
   if (!user) throw new Error("Not authenticated");
   const user_id = user.id;
 
-  const amountRaw = formData.get("amount")?.toString() ?? "0";
-  const amount = new Decimal(amountRaw);
-
-  const dateRaw = formData.get("transaction_date")?.toString();
-  if (!dateRaw) throw new Error("Transaction date is required");
-
-  const transaction_type = (formData.get("transaction_type")?.toString() ?? "expense") as any;
-
-  const description = formData.get("description")?.toString() || null;
-
-  const subcategory_id = formData.get("subcategory_id")?.toString() || null;
-
+  const organizedData = buildPrismaUpdateCreateDataObject(formData);
   await prisma.transaction.create({
-    data: { user_id, transaction_date: new Date(dateRaw), amount, transaction_type, description, subcategory_id },
+    data: { ...organizedData, user_id, },
   });
 
   // revalidate the list page
@@ -71,21 +86,13 @@ export async function updateTransaction(formData: FormData) {
   const id = formData.get("id")?.toString();
   if (!id) throw new Error("Transaction id is required");
 
-  const amountRaw = formData.get("amount")?.toString() ?? "0";
-  const amount = new Decimal(amountRaw);
-
-  const dateRaw = formData.get("transaction_date")?.toString();
-  if (!dateRaw) throw new Error("Transaction date is required");
-
-  const transaction_type = (formData.get("transaction_type")?.toString() ?? "expense") as any;
-  const description = formData.get("description")?.toString() || null;
-  const subcategory_id = formData.get("subcategory_id")?.toString() || null;
+  const organizedData = buildPrismaUpdateCreateDataObject(formData);
 
   // ensure ownership
   const existing = await prisma.transaction.findFirst({ where: { id, user_id: user.id } });
   if (!existing) throw new Error("Not found or not authorized");
 
-  await prisma.transaction.update({ where: { id, user_id: user.id }, data: { transaction_date: new Date(dateRaw), amount, transaction_type, description, subcategory_id } });
+  await prisma.transaction.update({ where: { id, user_id: user.id }, data: organizedData });
 
   revalidatePath("/transactions");
 }
