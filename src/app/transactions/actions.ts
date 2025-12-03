@@ -20,17 +20,28 @@ const transactionWithRelations = {
 
 const buildPrismaUpdateCreateDataObject = (formData: FormData) => {
   const amountRaw = formData.get("amount")?.toString() ?? "0";
+  if (!amountRaw || isNaN(Number(amountRaw))) {
+    throw new Error("Invalid amount");
+  }
   const amount = new Decimal(amountRaw);
 
   const dateRaw = formData.get("transaction_date")?.toString();
   if (!dateRaw) throw new Error("Transaction date is required");
+  const transaction_date = new Date(dateRaw);
+  if (isNaN(transaction_date.getTime())) {
+    throw new Error("Invalid transaction date");
+  }
 
-  const transaction_type = (formData.get("transaction_type")?.toString() ?? "expense") as any;
+  const transaction_type = formData.get("transaction_type")?.toString() ?? "expense";
+  if (!["income", "expense"].includes(transaction_type)) {
+    throw new Error("Invalid transaction type");
+  }
+
   const description = formData.get("description")?.toString() || null;
   const subcategory_id = formData.get("subcategory_id")?.toString() || null;
   const institution_id = formData.get("institution_id")?.toString() || null;
 
-  return { transaction_date: new Date(dateRaw), amount, transaction_type, description, subcategory_id, institution_id }
+  return { transaction_date, amount, transaction_type, description, subcategory_id, institution_id };
 }
 
 export async function getTransactions() {
