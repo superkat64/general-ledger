@@ -149,6 +149,34 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
       </div>
       <div className="flex flex-row gap-6 justify-between">
         <div className="w-full">
+          <Label htmlFor="transaction_type">Type</Label>
+          <Select value={transactionType} onValueChange={setTransactionType}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="expense">Expense</SelectItem>
+              <SelectItem value="income">Income</SelectItem>
+              <SelectItem value="transfer">Transfer</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-full">
+          <Label htmlFor="institution">Institution</Label>
+          <Select value={institutionId} onValueChange={setInstitutionId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Institution" />
+            </SelectTrigger>
+            <SelectContent>
+              {institutions.map(i => (
+                <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="flex flex-row gap-6 justify-between">
+        <div className="w-full">
           <Label htmlFor="category">Category</Label>
           <Select value={categoryId} onValueChange={changeCategories}>
             <SelectTrigger>
@@ -178,34 +206,6 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
                 <SelectItem key={sub.id} value={sub.id}>
                   {sub.name}
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="flex flex-row gap-6 justify-between">
-        <div className="w-full">
-          <Label htmlFor="transaction_type">Type</Label>
-          <Select value={transactionType} onValueChange={setTransactionType}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="expense">Expense</SelectItem>
-              <SelectItem value="income">Income</SelectItem>
-              <SelectItem value="transfer">Transfer</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="w-full">
-          <Label htmlFor="institution">Institution</Label>
-          <Select value={institutionId} onValueChange={setInstitutionId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Institution" />
-            </SelectTrigger>
-            <SelectContent>
-              {institutions.map(i => (
-                <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
