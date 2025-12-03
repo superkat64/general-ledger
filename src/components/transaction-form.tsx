@@ -14,11 +14,12 @@ import {
 
 import { createTransaction, updateTransaction } from "@/app/transactions/actions";
 import { getCategoriesWithSubcategories } from "@/app/categories/actions";
+import { getInstitutions } from "@/app/institutions/actions";
+
 import { TransactionWithRels, CategoryWithSubs } from "@/lib/types";
-import type { subcategory } from "@prisma/client";
+import type { institution, subcategory } from "@prisma/client";
 
 export default function TransactionForm({ transaction }: { transaction?: TransactionWithRels }) {
-
   // Transaction attributes
   const [transactionDate, setTransactionDate] = useState<string>(
     transaction
@@ -37,6 +38,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
   const [subcategoryId, setSubcategoryId] = useState<string>(
     transaction ? transaction.subcategory?.id ?? "" : ""
   );
+  const [institutionId, setInstitutionId] = useState<string>(transaction ? transaction.institution?.id ?? "" : "")
 
   // Category state
   const [categoryId, setCategoryId] = useState<string>(
@@ -44,12 +46,25 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
   );
   const [subcategories, setSubcategories] = useState<subcategory[]>([]);
   const [categories, setCategories] = useState<CategoryWithSubs[]>([]);
+
+  const [institutions, setInstitutions] = useState<institution[]>([]);
   const [isPending, startTransition] = useTransition();
 
   const transactionId = transaction?.id;
   const existingCategoryId = transaction?.subcategory?.category_id;
 
-  // Load categories on mount
+  useEffect(() => {
+    async function loadInstitutions() {
+      try {
+        const institutions = await getInstitutions();
+        setInstitutions(institutions);
+      } catch (error) {
+        console.error("Failed to load institutions:", error);
+      }
+    }
+    loadInstitutions();
+  }, [])
+
   useEffect(() => {
     async function loadCategories() {
       try {
@@ -86,6 +101,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
     if (transactionType !== "") formData.append("transaction_type", transactionType);
     if (description) formData.append("description", description);
     if (subcategoryId) formData.append("subcategory_id", subcategoryId);
+    if (institutionId) formData.append("institution_id", institutionId);
 
     startTransition(async () => {
       try {
@@ -105,19 +121,19 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="flex flex-row items-center">
-        <Label htmlFor="transaction_date" className="pr-3">Date:</Label>
-        <Input
-          id="transaction_date"
-          type="date"
-          className="w-fit"
-          name="transaction_date"
-          value={transactionDate}
-          onChange={(e) => setTransactionDate(e.currentTarget.value)}
-          required
-        />
-      </div>
       <div className="flex flex-row gap-6 justify-between">
+        <div className="w-full">
+          <Label htmlFor="transaction_date" className="pr-3">Date:</Label>
+          <Input
+            id="transaction_date"
+            type="date"
+            className="w-fit"
+            name="transaction_date"
+            value={transactionDate}
+            onChange={(e) => setTransactionDate(e.currentTarget.value)}
+            required
+          />
+        </div>
         <div className="w-full">
           <Label htmlFor="amount">Amount</Label>
           <Input
@@ -130,21 +146,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
             required
           />
         </div>
-        <div className="w-full">
-          <Label htmlFor="transaction_type">Type</Label>
-          <Select value={transactionType} onValueChange={setTransactionType}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="expense">Expense</SelectItem>
-              <SelectItem value="income">Income</SelectItem>
-              <SelectItem value="transfer">Transfer</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
-
       <div className="flex flex-row gap-6 justify-between">
         <div className="w-full">
           <Label htmlFor="category">Category</Label>
@@ -176,6 +178,34 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
                 <SelectItem key={sub.id} value={sub.id}>
                   {sub.name}
                 </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="flex flex-row gap-6 justify-between">
+        <div className="w-full">
+          <Label htmlFor="transaction_type">Type</Label>
+          <Select value={transactionType} onValueChange={setTransactionType}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="expense">Expense</SelectItem>
+              <SelectItem value="income">Income</SelectItem>
+              <SelectItem value="transfer">Transfer</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-full">
+          <Label htmlFor="institution">Institution</Label>
+          <Select value={institutionId} onValueChange={setInstitutionId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Institution" />
+            </SelectTrigger>
+            <SelectContent>
+              {institutions.map(i => (
+                <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>

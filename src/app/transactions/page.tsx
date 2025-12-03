@@ -1,10 +1,10 @@
 // app/transactions/page.tsx
 import TransactionTable from "@/components/transaction-table";
 import Link from "next/link";
-import { listTransactions } from "@/app/transactions/actions";
+import { getTransactions } from "@/app/transactions/actions";
 
 export default async function TransactionsPage() {
-  const transactions = await listTransactions();
+  const transactions = await getTransactions();
 
   return (
     <div className="p-8">
