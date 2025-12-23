@@ -1,13 +1,12 @@
 // components/transactions/columns.tsx
 
 "use client"
-
-import type { transaction_type } from '@prisma/client';
-import type { Decimal } from '@prisma/client/runtime/library';
+import type { TransactionForDisplay } from '../queries';
 
 import { ColumnDef } from '@tanstack/react-table';
 import Link from "next/link";
-import { Trash2, Edit } from "lucide-react";
+import { ArrowUpDown, Edit, Trash2 } from "lucide-react";
+import { Button } from '@/components/ui/button';
 
 function formatDate(d: Date | string) {
   const date = d instanceof Date ? d : new Date(d);
@@ -15,22 +14,20 @@ function formatDate(d: Date | string) {
   return userLocaleDate;
 }
 
-export type Transaction = {
-  id: string
-  date: Date
-  amount: Decimal
-  type: transaction_type
-  institution: string | undefined
-  category: string | undefined
-  subcategory: string | undefined
-  description: string | null
-
-}
-
-export const columns: ColumnDef<Transaction>[] = [
+export const columns: ColumnDef<TransactionForDisplay>[] = [
   {
     accessorKey: "date",
-    header: "Date",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => formatDate(row.original.date)
   },
   {

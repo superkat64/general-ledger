@@ -2,24 +2,14 @@
 
 // import TransactionTable from "@/components/transaction-table";
 
-import { columns, Transaction } from '@/components/transactions/columns';
-import { DataTable } from '@/components/transactions/data-table';
+import { columns } from './components/columns';
+import { DataTable } from './components/data-table';
 import Link from "next/link";
-import { getTransactions } from "@/app/transactions/actions";
+import { getTransactionsForDisplay } from "./queries";
+import type { TransactionForDisplay } from "./queries";
 
-async function getData(): Promise<Transaction[]> {
-  return (await getTransactions()).map(t => (
-    {
-      id: t.id,
-      date: t.transaction_date,
-      amount: t.amount,
-      type: t.transaction_type,
-      institution: t.institution?.name,
-      category: t.subcategory?.category?.name,
-      subcategory: t.subcategory?.name,
-      description: t.description
-    }
-  ));
+async function getData(): Promise<TransactionForDisplay[]> {
+  return await getTransactionsForDisplay();
 }
 
 export default async function TransactionsPage() {
