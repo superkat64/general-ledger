@@ -11,7 +11,8 @@ import { Trash2, Edit } from "lucide-react";
 
 function formatDate(d: Date | string) {
   const date = d instanceof Date ? d : new Date(d);
-  return date.toDateString();
+  const userLocaleDate = new Intl.DateTimeFormat('en-US').format(date)
+  return userLocaleDate;
 }
 
 export type Transaction = {
@@ -28,8 +29,9 @@ export type Transaction = {
 
 export const columns: ColumnDef<Transaction>[] = [
   {
-    accessorKey: "transaction_date",
-    header: "Date"
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => formatDate(row.original.date)
   },
   {
     accessorKey: "amount",
@@ -45,8 +47,12 @@ export const columns: ColumnDef<Transaction>[] = [
     }
   },
   {
-    accessorKey: "transaction_type",
-    header: "Type"
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ row }) => {
+      return <div className="capitalize">{row.original.type}</div>
+
+    }
   },
   {
     accessorKey: "institution",
@@ -66,6 +72,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
   {
     id: "actions",
+    header: "Actions",
     cell: ({ row }) => {
       const t = row.original
       return (
