@@ -1,9 +1,9 @@
-import SubcategoryTable from '@/components/subcategory-table';
-import { listCategoryScopedSubcategories } from '@/app/categories/[id]/subcategories/actions';
+import SubcategoryTable from '@/app/categories/[id]/subcategories/components/table';
+import { getSubcategoriesByCategoryId } from '@/app/categories/[id]/subcategories/queries';
 import { getCategoryById } from '@/app/categories/actions';
 
 export default async function SubcategoriesPage({ params }: { params: { id: string } }) {
-  const subcats = await listCategoryScopedSubcategories(params.id);
+  const subcats = await getSubcategoriesByCategoryId(params.id);
   const cat = await getCategoryById(params.id);
 
   if (!cat) {

@@ -34,9 +34,6 @@ export async function createCategory(formData: FormData) {
   const name = formData.get("name")?.toString();
   if (!name) throw new Error("Name is required");
 
-  // const monthlyRaw = formData.get("monthly_budget")?.toString();
-  // const monthly_budget = monthlyRaw ? new Decimal(monthlyRaw) : null;
-
   const type = (formData.get("type")?.toString() ?? "expense") as any;
   const color = formData.get("color")?.toString() || null;
   const icon = formData.get("icon")?.toString() || null;
@@ -67,8 +64,6 @@ export async function updateCategory(formData: FormData) {
   if (!name) throw new Error("Name is required");
 
   // Format Category attributes
-  // const monthlyRaw = formData.get("monthly_budget")?.toString();
-  // const monthly_budget = monthlyRaw ? new Decimal(monthlyRaw) : null;
   const type = (formData.get("type")?.toString() ?? "expense") as any;
   const color = formData.get("color")?.toString() || null;
   const icon = formData.get("icon")?.toString() || null;

@@ -7,7 +7,6 @@ import Link from "next/link";
 import { Trash2, Edit } from "lucide-react";
 
 import { deleteCategory } from "@/app/categories/actions";
-import { Decimal } from "@prisma/client/runtime/library";
 import { cn } from "@/lib/utils";
 
 import type { category } from "@prisma/client";
@@ -18,18 +17,6 @@ type CategoryWithSubs = category & { subcategory?: Sub[] };
 type CategoryTableProps = {
   categories: CategoryWithSubs[];
 };
-
-function formatAmount(amount: number | Decimal | string | null | undefined) {
-  if (amount === null || amount === undefined) return "-";
-  if (typeof amount === "object" && "toFixed" in amount) {
-    try {
-      return (amount as Decimal).toFixed(2);
-    } catch {
-      return String(amount);
-    }
-  }
-  return Number(amount).toFixed(2);
-}
 
 export default function CategoryTable({ categories }: CategoryTableProps) {
   const [isPending, startTransition] = useTransition();
@@ -50,7 +37,6 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
         <TableRow className="hover:bg-transparent">
           <TableHead>Name</TableHead>
           <TableHead>Type</TableHead>
-          {/* <TableHead className='min-w-[150px]'>Monthly Budget</TableHead> */}
           <TableHead>Color</TableHead>
           <TableHead>Icon</TableHead>
           <TableHead>Subcategories</TableHead>
@@ -69,7 +55,6 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
           <TableRow key={c.id}>
             <TableCell>{c.name}</TableCell>
             <TableCell className="capitalize">{c.type}</TableCell>
-            {/* <TableCell>{c.monthly_budget ? '$' + formatAmount(c.monthly_budget) : '-'}</TableCell> */}
             <TableCell>
               {c.color ? (
                 <div className="flex flex-row gap-2">

@@ -3,19 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { stackServerApp } from "@/stack/server";
+import { Decimal } from "@prisma/client/runtime/library";
 
-export async function listCategoryScopedSubcategories(categoryId: string) {
-  const user = await stackServerApp.getUser();
-  if (!user) throw new Error("Not authenticated");
 
-  // verify the category exists and belongs to this user
-  const category = await prisma.category.findFirst({ where: { id: categoryId, user_id: user.id } });
-  if (!category) throw new Error("Not authorized");
-
-  return prisma.subcategory.findMany({ where: { category_id: categoryId }, orderBy: { name: "asc" } });
-}
-
-export async function updateSubcategoryName(formData: FormData) {
+export async function updateSubcategory(formData: FormData) {
   const user = await stackServerApp.getUser();
   if (!user) throw new Error('Not authenticated');
 
@@ -25,12 +16,15 @@ export async function updateSubcategoryName(formData: FormData) {
   const name = formData.get("name")?.toString();
   if (!name) throw new Error("Name is required");
 
+  const monthlyRaw = formData.get("monthly_budget")?.toString();
+  const monthly_budget = monthlyRaw ? new Decimal(monthlyRaw) : null;
+
   // ensure the subcategory exists and belongs to a category owned by this user
   const existing = await prisma.subcategory.findFirst({ where: { id }, include: { category: true } });
   if (!existing) throw new Error("Not found");
   if (existing.category.user_id !== user.id) throw new Error("Not authorized");
 
-  const updated = await prisma.subcategory.update({ where: { id }, data: { name } });
+  const updated = await prisma.subcategory.update({ where: { id }, data: { name, monthly_budget } });
 
   revalidatePath(`/categories/${existing.category_id}/subcategories`);
   return updated;
