@@ -21,7 +21,7 @@ type CategoryWithRelations = Prisma.categoryGetPayload<{ include: { subcategory:
 
 export default function CategoryForm({ category }: { category?: CategoryWithRelations }) {
   const [name, setName] = useState<string>(category?.name ?? "");
-  const [monthlyBudget, setMonthlyBudget] = useState<string>(category?.monthly_budget?.toString() ?? "");
+  // const [monthlyBudget, setMonthlyBudget] = useState<string>(category?.monthly_budget?.toString() ?? "");
   const [typeValue, setTypeValue] = useState<string>((category?.type as string) ?? "expense");
   const [color, setColor] = useState<string>(category?.color ?? "");
   const [icon, setIcon] = useState<string>(category?.icon ?? "");
@@ -49,8 +49,8 @@ export default function CategoryForm({ category }: { category?: CategoryWithRela
     event.preventDefault();
     const formData = new FormData();
     formData.append('name', name);
-    if (monthlyBudget) formData.append('monthly_budget', monthlyBudget);
-    formData.append('type', typeValue);
+    // if (monthlyBudget) formData.append('monthly_budget', monthlyBudget);
+    // formData.append('type', typeValue);
     if (color) formData.append('color', color);
     if (icon) formData.append('icon', icon);
 

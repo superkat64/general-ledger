@@ -6,7 +6,7 @@ import { stackServerApp } from "@/stack/server";
 export type TransactionForDisplay = {
   id: string;
   date: string;
-  amount: number;
+  amount: string;
   type: string;
   institution: string | null;
   category: string | null;
@@ -51,7 +51,7 @@ export async function getTransactionsForDisplay() {
   return transactions.map(t => ({
     id: t.id,
     date: t.transaction_date.toISOString(),
-    amount: t.amount.toString,
+    amount: t.amount.toString(),
     type: t.transaction_type,
     institution: t.institution?.name ?? null,
     category: t.subcategory?.category?.name ?? null,
