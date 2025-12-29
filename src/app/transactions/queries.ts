@@ -51,7 +51,7 @@ export async function getTransactionsForDisplay() {
   return transactions.map(t => ({
     id: t.id,
     date: t.transaction_date.toISOString(),
-    amount: Number(t.amount),
+    amount: t.amount.toString,
     type: t.transaction_type,
     institution: t.institution?.name ?? null,
     category: t.subcategory?.category?.name ?? null,
