@@ -31,7 +31,7 @@ const config: Config = {
           '300': '#6ee7b7',
           '400': '#34d399',
           '500': '#10b981',
-          '600': '#059669', // Financial Green
+          '600': '#059669',
           '700': '#047857',
           '800': '#065f46',
           '900': '#064e3b'
@@ -43,7 +43,7 @@ const config: Config = {
           '300': '#fca5a5',
           '400': '#f87171',
           '500': '#ef4444',
-          '600': '#dc2626', // Financial Red
+          '600': '#dc2626',
           '700': '#b91c1c',
           '800': '#991b1b',
           '900': '#7f1d1d'
@@ -145,7 +145,7 @@ const config: Config = {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)'
-      }
+      },
     }
   },
   plugins: [require("tailwindcss-animate")],
