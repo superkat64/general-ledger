@@ -1,4 +1,4 @@
-// components/transations/data-table.tsx
+// app/transactions/components/data-table.tsx
 
 "use client"
 import * as React from "react";
@@ -25,8 +25,6 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-import { Funnel } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -67,7 +65,7 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
       </div>
-      <div className="over-flow rounded-md border">
+      <div className="overflow rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

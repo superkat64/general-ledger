@@ -1,4 +1,4 @@
-// components/transactions/columns.tsx
+// app/transactions/components/columns.tsx
 
 "use client"
 import type { TransactionForDisplay } from '../queries';
