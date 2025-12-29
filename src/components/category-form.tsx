@@ -78,8 +78,8 @@ export default function CategoryForm({ category }: { category?: CategoryWithRela
       <Label htmlFor="name">Name</Label>
       <Input type="text" name="name" value={name} onChange={(e) => setName(e.currentTarget.value)} required />
 
-      <Label htmlFor="monthly_budget">Monthly Budget</Label>
-      <Input type="number" name="monthly_budget" value={monthlyBudget} onChange={(e) => setMonthlyBudget(e.currentTarget.value)} step="0.01" />
+      {/* <Label htmlFor="monthly_budget">Monthly Budget</Label>
+      <Input type="number" name="monthly_budget" value={monthlyBudget} onChange={(e) => setMonthlyBudget(e.currentTarget.value)} step="0.01" /> */}
 
       <Label htmlFor="type">Type</Label>
       <Select value={typeValue} onValueChange={setTypeValue}>

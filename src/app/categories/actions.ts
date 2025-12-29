@@ -3,7 +3,6 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/library";
 import { stackServerApp } from "@/stack/server";
 
 export async function getCategoriesWithSubcategories() {
@@ -35,15 +34,15 @@ export async function createCategory(formData: FormData) {
   const name = formData.get("name")?.toString();
   if (!name) throw new Error("Name is required");
 
-  const monthlyRaw = formData.get("monthly_budget")?.toString();
-  const monthly_budget = monthlyRaw ? new Decimal(monthlyRaw) : null;
+  // const monthlyRaw = formData.get("monthly_budget")?.toString();
+  // const monthly_budget = monthlyRaw ? new Decimal(monthlyRaw) : null;
 
   const type = (formData.get("type")?.toString() ?? "expense") as any;
   const color = formData.get("color")?.toString() || null;
   const icon = formData.get("icon")?.toString() || null;
   const subcategoryValues = formData.getAll("subcategory").map((s) => s?.toString().trim()).filter(Boolean);
 
-  const createData: any = { user_id, name, monthly_budget, type, color, icon };
+  const createData: any = { user_id, name, type, color, icon };
   if (subcategoryValues.length > 0) {
     createData.subcategory = { create: subcategoryValues.map((s) => ({ name: s })) };
   }
@@ -68,8 +67,8 @@ export async function updateCategory(formData: FormData) {
   if (!name) throw new Error("Name is required");
 
   // Format Category attributes
-  const monthlyRaw = formData.get("monthly_budget")?.toString();
-  const monthly_budget = monthlyRaw ? new Decimal(monthlyRaw) : null;
+  // const monthlyRaw = formData.get("monthly_budget")?.toString();
+  // const monthly_budget = monthlyRaw ? new Decimal(monthlyRaw) : null;
   const type = (formData.get("type")?.toString() ?? "expense") as any;
   const color = formData.get("color")?.toString() || null;
   const icon = formData.get("icon")?.toString() || null;
@@ -80,7 +79,7 @@ export async function updateCategory(formData: FormData) {
   if (!existing) throw new Error("Category not found or not authorized");
 
   // Build prisma object - this action only supports adding new subcategories to categories.
-  const updateData: any = { name, monthly_budget, type, color, icon };
+  const updateData: any = { name, type, color, icon };
   const newNames = Array.from(new Set(subcategoryValues));
   const ops: any[] = [];
   ops.push(prisma.category.update({ where: { id }, data: updateData }));
