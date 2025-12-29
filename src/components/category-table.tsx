@@ -20,7 +20,6 @@ type CategoryTableProps = {
 
 export default function CategoryTable({ categories }: CategoryTableProps) {
   const [isPending, startTransition] = useTransition();
-
   const deleteRow = async (id: string) => {
     if (!confirm("Delete this category?")) return;
 
@@ -52,13 +51,13 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
           </TableRow>
         )}
         {categories.map((c) => (
-          <TableRow key={c.id}>
-            <TableCell>{c.name}</TableCell>
+          <TableRow key={c.id} className="hover:bg-transparent">
+            <TableCell><Link href={`/categories/${c.id}`}>{c.name}</Link></TableCell>
             <TableCell className="capitalize">{c.type}</TableCell>
             <TableCell>
               {c.color ? (
                 <div className="flex flex-row gap-2">
-                  <div className="w-5 h-5 rounded" style={{ backgroundColor: c.color }} title={c.color} /> {c.color}
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: c.color }} title={c.color} />
                 </div>
               ) : (
                 "-"
@@ -69,9 +68,9 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
               {c.subcategory && c.subcategory.length > 0 ? (
                 <div className="flex gap-2 flex-wrap">
                   {c.subcategory.map((s) => (
-                    <span key={s.id} className="text-sm px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded">
+                    <Link key={s.id} href={`categories/${c.id}/subcategories`} className="text-sm px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded hover:bg-accent">
                       {s.name}
-                    </span>
+                    </Link>
                   ))}
                 </div>
               ) : (

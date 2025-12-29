@@ -1,7 +1,14 @@
-// app/subcategories/queries.ts
+// app/categories/[id]/subcategories/queries.ts
 
 import { prisma } from "@/lib/prisma";
 import { stackServerApp } from "@/stack/server";
+
+export type SubcategoryForDisplay = {
+  id: string;
+  name: string;
+  monthly_budget: string | undefined;
+  category_id: string;
+};
 
 export async function getSubcategoriesByCategoryId(category_id: string) {
   const user = await stackServerApp.getUser();
