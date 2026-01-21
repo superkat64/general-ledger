@@ -68,6 +68,7 @@ model transaction {
   user_id          String           @db.Uuid
   transaction_date DateTime         @db.Date
   amount           Decimal          @db.Decimal(12, 2)
+  currency         String           @db.Char(3)
   transaction_type transaction_type @default(expense)
   description      String?
   subcategory_id   String?          @db.Uuid

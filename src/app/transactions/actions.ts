@@ -13,6 +13,8 @@ const buildPrismaUpdateCreateDataObject = (formData: FormData) => {
   }
   const amount = new Decimal(amountRaw);
 
+  const currency = formData.get("currency")?.toString() ?? "USD";
+
   const dateRaw = formData.get("transaction_date")?.toString();
   if (!dateRaw) throw new Error("Transaction date is required");
   const transaction_date = new Date(dateRaw);
@@ -30,7 +32,7 @@ const buildPrismaUpdateCreateDataObject = (formData: FormData) => {
   const subcategory_id = formData.get("subcategory_id")?.toString() || null;
   const institution_id = formData.get("institution_id")?.toString() || null;
 
-  return { transaction_date, amount, transaction_type, description, subcategory_id, institution_id };
+  return { transaction_date, amount, currency, transaction_type, description, subcategory_id, institution_id };
 }
 
 export async function createTransaction(formData: FormData) {
