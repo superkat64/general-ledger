@@ -11,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { CurrencySelect } from "@/components/currency-select";
+import { type CurrencyCode } from '@/lib/currencies'
 
 import { createTransaction, updateTransaction } from "@/app/transactions/actions";
 import { getCategoriesWithSubcategories } from "@/app/categories/actions";
@@ -28,6 +30,11 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
   );
   const [amount, setAmount] = useState<string>(
     transaction ? transaction.amount?.toString() ?? "0.00" : "0.00"
+  );
+  const [currency, setCurrency] = useState<CurrencyCode>(
+    transaction && transaction.currency
+      ? transaction.currency as CurrencyCode
+      : "USD"
   );
   const [transactionType, setTransactionType] = useState<string>(
     transaction ? transaction.transaction_type : ""
@@ -98,6 +105,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
     const formData = new FormData();
     formData.append("transaction_date", transactionDate);
     formData.append("amount", amount.toString());
+    formData.append("currency", currency.toString());
     if (transactionType !== "") formData.append("transaction_type", transactionType);
     if (description) formData.append("description", description);
     if (subcategoryId) formData.append("subcategory_id", subcategoryId);
@@ -132,6 +140,13 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
             value={transactionDate}
             onChange={(e) => setTransactionDate(e.currentTarget.value)}
             required
+          />
+        </div>
+        <div className="w-full">
+          <Label htmlFor="currency">Currency</Label>
+          <CurrencySelect
+            value={currency}
+            onChange={(value) => setCurrency(value)}
           />
         </div>
         <div className="w-full">
