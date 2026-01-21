@@ -12,7 +12,7 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { CurrencySelect } from "@/components/currency-select";
-import { type CurrencyCode } from '@/lib/currencies'
+import { CURRENCIES, type CurrencyCode } from '@/lib/currencies'
 
 import { createTransaction, updateTransaction } from "@/app/transactions/actions";
 import { getCategoriesWithSubcategories } from "@/app/categories/actions";
@@ -20,6 +20,8 @@ import { getInstitutions } from "@/app/institutions/actions";
 
 import { TransactionWithRels, CategoryWithSubs } from "@/lib/types";
 import type { institution, subcategory } from "@prisma/client";
+
+const isValidCurrency = (code: string): code is CurrencyCode => code in CURRENCIES;
 
 export default function TransactionForm({ transaction }: { transaction?: TransactionWithRels }) {
   // Transaction attributes
@@ -32,8 +34,8 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
     transaction ? transaction.amount?.toString() ?? "0.00" : "0.00"
   );
   const [currency, setCurrency] = useState<CurrencyCode>(
-    transaction && transaction.currency
-      ? transaction.currency as CurrencyCode
+    transaction?.currency && isValidCurrency(transaction.currency)
+      ? transaction.currency
       : "USD"
   );
   const [transactionType, setTransactionType] = useState<string>(
@@ -145,6 +147,7 @@ export default function TransactionForm({ transaction }: { transaction?: Transac
         <div className="w-full">
           <Label htmlFor="currency">Currency</Label>
           <CurrencySelect
+            id="currency"
             value={currency}
             onChange={(value) => setCurrency(value)}
           />

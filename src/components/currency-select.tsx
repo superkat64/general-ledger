@@ -1,13 +1,14 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { currencyList, type CurrencyCode } from '@/lib/currencies'
 
-export function CurrencySelect({ value, onChange }: {
+export function CurrencySelect({ id, value, onChange }: {
+  id: string
   value: CurrencyCode
   onChange: (value: CurrencyCode) => void
 }) {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
+    <Select value={value} onValueChange={(v) => onChange(v as CurrencyCode)}>
+      <SelectTrigger id={id}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
