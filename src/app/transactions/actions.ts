@@ -14,9 +14,6 @@ const buildPrismaUpdateCreateDataObject = (formData: FormData) => {
   const amount = new Decimal(amountRaw);
 
   const currency = formData.get("currency")?.toString() ?? "USD";
-  if (!currency) {
-    throw new Error("Currency is required");
-  }
 
   const dateRaw = formData.get("transaction_date")?.toString();
   if (!dateRaw) throw new Error("Transaction date is required");
@@ -44,7 +41,6 @@ export async function createTransaction(formData: FormData) {
   const user_id = user.id;
 
   const organizedData = buildPrismaUpdateCreateDataObject(formData);
-  console.log(organizedData);
   await prisma.transaction.create({
     data: { ...organizedData, user_id, },
   });
