@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 import { notFound } from "next/navigation";
-import { getTransactionById } from "@/app/transactions/actions";
+import { getTransactionById } from "@/app/transactions/queries";
 
 export default async function EditTransactionPage({ params }: { params: { id: string } }) {
   const transaction = await getTransactionById(params.id);
