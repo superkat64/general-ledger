@@ -1,6 +1,6 @@
 // lib/currencies.ts
 export const CURRENCIES = {
-  AUS: { code: 'AUS', symbol: '$', flag: '🇦🇺', name: 'Australian Dollar' },
+  AUD: { code: 'AUD', symbol: '$', flag: '🇦🇺', name: 'Australian Dollar' },
   USD: { code: 'USD', symbol: '$', flag: '🇺🇸', name: 'US Dollar' },
   EUR: { code: 'EUR', symbol: '€', flag: '🇪🇺', name: 'Euro' },
   GBP: { code: 'GBP', symbol: '£', flag: '🇬🇧', name: 'British Pound' },
