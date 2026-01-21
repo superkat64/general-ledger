@@ -20,7 +20,7 @@ function AuthButtonContent() {
   }
   return (
     <Button
-      type="submit"
+      type="button"
       variant="outline"
       className="w-full flex items-center gap-2"
       onClick={() => user?.signOut()}
