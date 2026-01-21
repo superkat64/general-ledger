@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { ReceiptText, Landmark, NotebookPen } from 'lucide-react';
+import { AuthButton } from "./auth-button";
 
 export function AppSidebar() {
   return (
@@ -51,7 +52,9 @@ export function AppSidebar() {
         </SidebarGroup>
         <SidebarGroup />
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <AuthButton />
+      </SidebarFooter>
     </Sidebar>
   )
 }
